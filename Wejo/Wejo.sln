@@ -1,0 +1,60 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.13.35806.99
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Identity.API", "Wejo.Identity.API\Wejo.Identity.API.csproj", "{7ADAD76E-42EA-4231-9EF4-626ACDA44B51}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Identity", "Identity", "{02EA681E-C7D8-13C7-8484-4AC65E1B71E8}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Identity.Application", "Wejo.Identity.Application\Wejo.Identity.Application.csproj", "{3BE7FBC3-5F5A-4335-BDDC-86F8FC59343D}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Common", "Common", "{0AF25886-5992-4C14-8222-BF23671CB07D}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Common.Core", "Wejo.Common.Core\Wejo.Common.Core.csproj", "{C4EE8CA9-65CE-4785-8871-A448F7E2B98C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Common.SeedWork", "Wejo.Common.SeedWork\Wejo.Common.SeedWork.csproj", "{EB7A3107-9F6E-4B26-807B-2153BF966B15}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Common.Domain", "Wejo.Common.Domain\Wejo.Common.Domain.csproj", "{FC375051-9E20-451A-B186-48E6074C5064}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{7ADAD76E-42EA-4231-9EF4-626ACDA44B51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7ADAD76E-42EA-4231-9EF4-626ACDA44B51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7ADAD76E-42EA-4231-9EF4-626ACDA44B51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7ADAD76E-42EA-4231-9EF4-626ACDA44B51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3BE7FBC3-5F5A-4335-BDDC-86F8FC59343D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3BE7FBC3-5F5A-4335-BDDC-86F8FC59343D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3BE7FBC3-5F5A-4335-BDDC-86F8FC59343D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3BE7FBC3-5F5A-4335-BDDC-86F8FC59343D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C4EE8CA9-65CE-4785-8871-A448F7E2B98C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C4EE8CA9-65CE-4785-8871-A448F7E2B98C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C4EE8CA9-65CE-4785-8871-A448F7E2B98C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C4EE8CA9-65CE-4785-8871-A448F7E2B98C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EB7A3107-9F6E-4B26-807B-2153BF966B15}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EB7A3107-9F6E-4B26-807B-2153BF966B15}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EB7A3107-9F6E-4B26-807B-2153BF966B15}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EB7A3107-9F6E-4B26-807B-2153BF966B15}.Release|Any CPU.Build.0 = Release|Any CPU
+		{FC375051-9E20-451A-B186-48E6074C5064}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{FC375051-9E20-451A-B186-48E6074C5064}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{FC375051-9E20-451A-B186-48E6074C5064}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{FC375051-9E20-451A-B186-48E6074C5064}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{7ADAD76E-42EA-4231-9EF4-626ACDA44B51} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{3BE7FBC3-5F5A-4335-BDDC-86F8FC59343D} = {02EA681E-C7D8-13C7-8484-4AC65E1B71E8}
+		{C4EE8CA9-65CE-4785-8871-A448F7E2B98C} = {0AF25886-5992-4C14-8222-BF23671CB07D}
+		{EB7A3107-9F6E-4B26-807B-2153BF966B15} = {0AF25886-5992-4C14-8222-BF23671CB07D}
+		{FC375051-9E20-451A-B186-48E6074C5064} = {0AF25886-5992-4C14-8222-BF23671CB07D}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BDD692DA-09C1-43BB-9245-BDB5BFE74686}
+	EndGlobalSection
+EndGlobal
