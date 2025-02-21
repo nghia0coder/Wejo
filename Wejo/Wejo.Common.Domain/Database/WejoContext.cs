@@ -21,15 +21,14 @@ public partial class WejoContext : DbContext, IWejoContext
 
         builder.ApplyConfigurationsFromAssembly(typeof(WejoContext).Assembly);
 
-
         builder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Users_pkey");
 
             entity.ToTable("Users", "identity");
 
-            entity.Property(e => e.Id).ValueGeneratedNever();
-            entity.Property(e => e.Gender).HasMaxLength(10);
+            entity.Property(e => e.Id).HasColumnType("text").ValueGeneratedNever();
+
         });
     }
 }

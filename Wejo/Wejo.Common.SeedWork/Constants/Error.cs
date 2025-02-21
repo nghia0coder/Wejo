@@ -41,6 +41,11 @@ public static class Error
 
     #region -- E1xx --
 
+    /// <summary>
+    /// User not found
+    /// </summary>
+    public const string E119 = "User not found";
+
     #endregion
 
     #region -- E2xx --

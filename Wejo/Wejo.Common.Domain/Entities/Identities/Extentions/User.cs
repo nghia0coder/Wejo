@@ -1,5 +1,6 @@
 ﻿namespace Wejo.Common.Domain.Entities;
 
+using Core.Enums;
 using SeedWork.Dtos;
 
 partial class User
@@ -11,16 +12,31 @@ partial class User
     /// </summary>
     public User()
     {
-        Id = Guid.NewGuid();
         CreatedOn = DateTime.UtcNow;
+    }
+
+    /// <summary>
+    /// Update
+    /// </summary>
+    /// <param name="firstName"></param>
+    /// <param name="lastName"></param>
+    /// <param name="bio"></param>
+    /// <param name="gender"></param>
+    public void Update(string? firstName, string? lastName, string? bio, Gender gender, string? imgUrl)
+    {
+        FirstName = firstName;
+        LastName = lastName;
+        Bio = bio;
+        Gender = gender;
+        Avatar = imgUrl;
+
+        ModifiedOn = DateTime.UtcNow;
     }
 
 
     /// <summary>
     /// Convert to data transfer object
     /// </summary>
-    /// <param name="numberOfFollowings"></param>
-    /// <param name="numberOfFollowers"></param>
     /// <returns>Return the DTO</returns>
     public ViewDto ToViewDto()
     {
@@ -40,48 +56,11 @@ partial class User
             Id = Id,
             LastName = LastName,
             FirstName = FirstName,
-            Avatar = Avatar,
-            Email = Email,
-            CreatedOn = CreatedOn,
+            Bio = Bio,
+            Gender = Gender.ToString(),
+            Avatar = Avatar
         };
     }
-
-
-    ///// <summary>
-    ///// Create JWT
-    ///// </summary>
-    ///// <param name="jwt">JWT setting</param>
-    ///// <returns>Returns the result</returns>
-    //public TokenDto CreateJwt(JwtDto jwt)
-    //{
-    //    var roles = string.Join(",", Roles);
-
-    //    var payload = new PayloadDto
-    //    {
-    //        Id = Id,
-    //        UserName = UserName + "",
-    //        ProfileName = ProfileName + "",
-    //        ProfileId = ProfileId + "",
-    //        UserFolder = UserFolder,
-    //        UserAvatar = Avatar + "",
-    //        Roles = Roles,
-    //        IsPremium = IsPremium || roles.IsIsAdministrator(),
-    //        IsWalletShowing = IsWalletShowing,
-    //        SessionId = SessionId,
-    //        MinioInstance = MinioInstance,
-    //        StorageLimit = StorageLimit
-    //    };
-
-    //    var st = new SecurityToken(jwt, payload);
-    //    var delay = 30; // time delay between server and client (seconds)
-
-    //    return new TokenDto
-    //    {
-    //        AccessToken = st.Jwt,
-    //        ExpiredDate = st.ExpiredDate.AddSeconds(-delay),
-    //        Roles = roles
-    //    };
-    //}
 
     #endregion
 
@@ -90,14 +69,14 @@ partial class User
     /// <summary>
     /// Base
     /// </summary>
-    public class BaseDto : IdDto
+    public class BaseDto
     {
         #region -- Properties --
 
         /// <summary>
-        /// LastName
+        /// Id
         /// </summary>
-        public string? LastName { get; set; }
+        public string? Id { get; set; }
 
         /// <summary>
         /// FirstName
@@ -105,19 +84,24 @@ partial class User
         public string? FirstName { get; set; }
 
         /// <summary>
+        /// LastName
+        /// </summary>
+        public string? LastName { get; set; }
+
+        /// <summary>
+        /// Bio
+        /// </summary>
+        public string? Bio { get; set; }
+
+        /// <summary>
         /// Avatar
         /// </summary>
         public string? Avatar { get; set; }
 
         /// <summary>
-        /// Email
+        /// Gender
         /// </summary>
-        public string? Email { get; set; }
-
-        /// <summary>
-        /// CreatedOn
-        /// </summary>
-        public DateTime? CreatedOn { get; set; }
+        public string? Gender { get; set; }
 
         #endregion
     }

@@ -1,16 +1,17 @@
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
-namespace Wejo.Identity.Api;
+namespace Wejo.Identity.API;
 
 using Application;
 using Application.Extensions;
 using Application.Interfaces;
+using Application.Services;
 using Common.Core.Extensions;
 using Common.Domain.Database;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Extensions;
-using Microsoft.Extensions.DependencyInjection;
 using static Common.SeedWork.Constants.Setting;
 
 /// <summary>
@@ -77,6 +78,15 @@ public class Program
         // Setting
         builder.Services.AddSingleton<ISetting>(st!);
 
+        //Azure Blob Storage
+        var blobConnString = builder.Configuration.GetSection("AzureBlobStorage:BlobStorageConnectionStrings").Value!;
+        builder.Services.AddAzureBlobStorage(blobConnString);
+
+        // Firebase
+        builder.Services.AddSingleton<FirebaseService>();
+        builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+        builder.Services.AddScoped<IFirebaseAuthService, FirebaseAuthService>();
+
         // DbContext
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
         builder.Services.AddScoped<IWejoContext>(p => p.GetService<WejoContext>()!);
@@ -91,7 +101,8 @@ public class Program
         #endregion
 
         #region -- Setup token --
-        //builder.Services.AddBearerAuthentication(st.Jwt);
+        var firebaseProjectId = builder.Configuration["Firebase:ProjectId"];
+        builder.Services.AddBearerAuthentication(firebaseProjectId);
         builder.Services.AddResponseCaching();
 
         // Cookie name
@@ -104,7 +115,36 @@ public class Program
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(p => { p.EnableAnnotations(); });
 
-        builder.Services.ConfigureMaxRequestSizes();
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.EnableAnnotations();
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "Enter JWT Bearer token **_only_**",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            Array.Empty<string>()
+        }
+    });
+        });
+
 
         var app = builder.Build();
 

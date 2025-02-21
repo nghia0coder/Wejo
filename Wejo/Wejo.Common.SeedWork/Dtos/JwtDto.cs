@@ -8,51 +8,34 @@ public class JwtDto
     #region -- Properties --
 
     /// <summary>
+    /// Access Token
+    /// </summary>
+    public string IdToken { get; set; } = string.Empty;
+
+    /// <summary>
+    /// RefreshToken
+    /// </summary>
+    public string RefreshToken { get; set; } = string.Empty;
+
+    /// <summary>
     /// JWT signing
     /// </summary>
-    public string Signing { get; set; }
+    public string ExpiresIn { get; set; } = string.Empty;
 
     /// <summary>
-    /// JWT issuer
+    /// User Id
     /// </summary>
-    public string Issuer { get; set; }
+    public string LocalId { get; set; } = string.Empty;
 
     /// <summary>
-    /// JWT audience
+    /// IsNewUser
     /// </summary>
-    public string Audience { get; set; }
+    public bool IsNewUser { get; set; }
 
     /// <summary>
-    /// Time to live of AccessToken in minutes [1 - 86400] (max 60 days)
+    /// PhoneNumber
     /// </summary>
-    public int TimeAt
-    {
-        get
-        {
-            return _timeAt;
-        }
-        set
-        {
-            // Ensure the value is within the allowed range for AccessToken
-            _timeAt = Math.Max(1, Math.Min(value, 86400));
-        }
-    }
-
-    /// <summary>
-    /// Time to live of RefreshToken in minutes [2 - 129600] (max 90 days)
-    /// </summary>
-    public int TimeRt
-    {
-        get
-        {
-            return _timeRt;
-        }
-        set
-        {
-            // Ensure the value is within the allowed range for RefreshToken
-            _timeRt = Math.Max(2, Math.Min(value, 129600));
-        }
-    }
+    public string PhoneNumber { get; set; } = string.Empty;
 
     #endregion
 
@@ -67,20 +50,6 @@ public class JwtDto
     /// Time to live of RefreshToken
     /// </summary>
     private int _timeRt;
-
-    #endregion
-
-    #region -- Methods --
-
-    /// <summary>
-    /// Initialize
-    /// </summary>
-    public JwtDto()
-    {
-        Signing = string.Empty;
-        Issuer = string.Empty;
-        Audience = string.Empty;
-    }
 
     #endregion
 }

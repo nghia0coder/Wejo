@@ -1,10 +1,14 @@
-﻿namespace Wejo.Identity.Application.Requests;
+﻿using Wejo.Common.Core.Requests;
 
-using Common.Core.Requests;
+namespace Wejo.Identity.Application.Requests;
 
 /// <summary>
 /// Request
 /// </summary>
-public class UserViewR : IdBaseR
+public class UserViewR : BaseR
 {
+    /// <summary>
+    /// Id
+    /// </summary>
+    public string? Id { get; set; }
 }

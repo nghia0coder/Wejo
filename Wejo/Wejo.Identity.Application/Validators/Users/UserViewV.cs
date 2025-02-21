@@ -5,6 +5,6 @@ using Common.Core.Validators;
 /// <summary>
 /// Validator
 /// </summary>
-public class UserViewV : IdBaseV
+public class UserViewV : BaseV
 {
 }

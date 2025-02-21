@@ -140,7 +140,7 @@ public class BaseR : IRequest<SingleResponse>
     /// UserId logged in
     /// </summary>
     [SwaggerSchema(ReadOnly = true)]
-    public Guid? UserId => Payload?.RootElement.GetProperty("id").GetGuid();
+    public string? UserId => _hc?.User?.Claims.FirstOrDefault(c => c.Type == "user_id")?.Value;
 
     /// <summary>
     /// UserAgent

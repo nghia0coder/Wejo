@@ -1,26 +1,12 @@
-﻿#region Information
-/*
- * Author       : Toan Nguyen Van
- * Email        : nvt87x@gmail.com
- * Phone        : +84 345 515 010
- * ------------------------------- *
- * Create       : 2024-Jan-21 08:37
- * Update       : 2024-Jan-21 08:37
- * Checklist    : 1.0
- * Status       : New
- */
-#endregion
-
+﻿using Azure.Storage.Blobs;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
-using System.Text;
 
 namespace Wejo.Common.Core.Extensions;
-using SeedWork.Dtos;
 
 /// <summary>
 /// IServiceCollection extension for using [this IServiceCollection] only
@@ -35,24 +21,23 @@ public static class IServiceCollectionExtension
     /// <param name="service">Service</param>
     /// <param name="jwt">JWT DTO</param>
     /// <returns>Return the result</returns>
-    public static IServiceCollection AddBearerAuthentication(this IServiceCollection service, JwtDto jwt)
+    public static IServiceCollection AddBearerAuthentication(this IServiceCollection service, string? firebaseProjectId)
     {
         // JWT
-        var key = Encoding.UTF8.GetBytes(jwt.Signing);
         service.AddAuthentication(p =>
         {
             p.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
             p.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
         }).AddJwtBearer(p =>
         {
+            p.Authority = $"https://securetoken.google.com/{firebaseProjectId}";
             p.RequireHttpsMetadata = false;
             p.SaveToken = true;
             p.TokenValidationParameters = new TokenValidationParameters
             {
-                ValidIssuer = jwt.Issuer,
-                ValidAudience = jwt.Audience,
+                ValidIssuer = $"https://securetoken.google.com/{firebaseProjectId}",
+                ValidAudience = firebaseProjectId,
                 ValidateIssuerSigningKey = true,
-                IssuerSigningKey = new SymmetricSecurityKey(key),
                 ValidateIssuer = true,
                 ValidateAudience = true,
                 ValidateLifetime = true,
@@ -72,6 +57,17 @@ public static class IServiceCollectionExtension
         });
 
         return service;
+    }
+
+    /// <summary>
+    /// Extension method for registering Azure Blob Storage
+    /// </summary>
+    /// <param name="services">IServiceCollection instance</param>
+    /// <param name="connectionString">Azure Blob Storage connection string</param>
+    public static IServiceCollection AddAzureBlobStorage(this IServiceCollection services, string connectionString)
+    {
+        services.AddSingleton(new BlobServiceClient(connectionString));
+        return services;
     }
 
     /// <summary>

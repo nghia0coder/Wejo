@@ -1,8 +1,10 @@
 ﻿namespace Wejo.Common.Domain.Entities;
 
+using Core.Enums;
+
 public partial class User
 {
-    public Guid Id { get; set; } = Guid.NewGuid();
+    public string? Id { get; set; }
 
     public string? FirstName { get; set; }
 
@@ -10,7 +12,7 @@ public partial class User
 
     public DateOnly? DateOfBirth { get; set; }
 
-    public string? Gender { get; set; }
+    public Gender? Gender { get; set; }
 
     public string? RefreshToken { get; set; }
 
