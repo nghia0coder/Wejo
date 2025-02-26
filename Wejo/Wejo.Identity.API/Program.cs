@@ -1,4 +1,3 @@
-using Microsoft.AspNetCore.Server.Kestrel.Core;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
@@ -30,7 +29,13 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddHealthChecks();
 
-        // Get assembly name
+        // Load configuration environment
+        var environment = builder.Environment.EnvironmentName;
+        builder.Configuration
+            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
+            .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
+            .AddEnvironmentVariables();
+
         var me = typeof(Program);
         var assembly = me.Assembly.GetName().Name;
 
@@ -44,35 +49,6 @@ public class Program
 
         // Update connection string
         var csDb = cs.SetDbParams(st.Db);
-
-        #region -- Load HTTP protocols --
-        if (!string.IsNullOrWhiteSpace(st.Protocols))
-        {
-            var protocols = st.Protocols.Split(';', StringSplitOptions.RemoveEmptyEntries);
-
-            builder.WebHost.ConfigureKestrel(p =>
-            {
-                foreach (var i in protocols)
-                {
-                    var arr = i.Split('_', StringSplitOptions.RemoveEmptyEntries);
-                    if (arr.Length != 2)
-                    {
-                        continue;
-                    }
-
-                    var port = Convert.ToInt32(arr[1]);
-                    var protocol = HttpProtocols.Http1;
-
-                    if (nameof(HttpProtocols.Http2) == arr[0])
-                    {
-                        protocol = HttpProtocols.Http2;
-                    }
-
-                    p.ListenAnyIP(port, q => q.Protocols = protocol);
-                }
-            });
-        }
-        #endregion
 
         #region -- Setup DI --
         // Setting
