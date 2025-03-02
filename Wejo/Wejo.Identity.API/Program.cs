@@ -155,7 +155,7 @@ public class Program
         app.MapHealthChecks("/health");
         app.UseResponseCaching();
 
-        app.Run();
+        app.Run("http://0.0.0.0:8080");
     }
 
     #endregion
