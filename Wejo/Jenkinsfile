@@ -80,27 +80,35 @@ pipeline {
                         echo "Deploying updated system..."
                         sh """
                             cd ${WORKSPACE}/Wejo
-                            docker-compose up -d --build game-service
-                            docker-compose up -d --build identity-service
+                            docker-compose stop game-service identity-service
+                            docker-compose rm -f game-service identity-service
+                            docker pull ${DOCKER_IMAGE_GAME}
+                            docker pull ${DOCKER_IMAGE_IDENTITY}
+                            docker-compose up -d --force-recreate game-service identity-service
                         """
                     }
-                    else{
+                    else {
                         if (env.UPDATE_GAME == "true") {
                             echo "Deploying updated Game Service..."
                             sh """
-                            cd ${WORKSPACE}/Wejo
-                            docker-compose up -d --build game-service
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop game-service
+                                docker-compose rm -f game-service
+                                docker pull ${DOCKER_IMAGE_GAME}
+                                docker-compose up -d --force-recreate game-service
                             """
                         }
                         if (env.UPDATE_IDENTITY == "true") {
                             echo "Deploying updated Identity Service..."
                             sh """
-                            cd ${WORKSPACE}/Wejo
-                            docker-compose up -d --build identity-service
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop identity-service
+                                docker-compose rm -f identity-service
+                                docker pull ${DOCKER_IMAGE_IDENTITY}
+                                docker-compose up -d --force-recreate identity-service
                             """
                         }
                     }
-                    
                 }
             }
         }
