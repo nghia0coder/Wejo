@@ -17,6 +17,18 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Common.SeedWork", "Wej
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Common.Domain", "Wejo.Common.Domain\Wejo.Common.Domain.csproj", "{FC375051-9E20-451A-B186-48E6074C5064}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "GameService", "GameService", "{F0E42396-F7F3-472D-AECF-DBE9E6EFE57C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.GameService.Application", "Wejo.GameService.Application\Wejo.GameService.Application.csproj", "{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.GameService.API", "Wejo.GameService.API\Wejo.GameService.API.csproj", "{82731755-4970-4DC5-851A-C278BF53C099}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
+	ProjectSection(SolutionItems) = preProject
+		docker-compose.yml = docker-compose.yml
+		Jenkinsfile = Jenkinsfile
+	EndProjectSection
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -43,6 +55,14 @@ Global
 		{FC375051-9E20-451A-B186-48E6074C5064}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{FC375051-9E20-451A-B186-48E6074C5064}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{FC375051-9E20-451A-B186-48E6074C5064}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150}.Release|Any CPU.Build.0 = Release|Any CPU
+		{82731755-4970-4DC5-851A-C278BF53C099}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{82731755-4970-4DC5-851A-C278BF53C099}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{82731755-4970-4DC5-851A-C278BF53C099}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{82731755-4970-4DC5-851A-C278BF53C099}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -53,6 +73,8 @@ Global
 		{C4EE8CA9-65CE-4785-8871-A448F7E2B98C} = {0AF25886-5992-4C14-8222-BF23671CB07D}
 		{EB7A3107-9F6E-4B26-807B-2153BF966B15} = {0AF25886-5992-4C14-8222-BF23671CB07D}
 		{FC375051-9E20-451A-B186-48E6074C5064} = {0AF25886-5992-4C14-8222-BF23671CB07D}
+		{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150} = {F0E42396-F7F3-472D-AECF-DBE9E6EFE57C}
+		{82731755-4970-4DC5-851A-C278BF53C099} = {F0E42396-F7F3-472D-AECF-DBE9E6EFE57C}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BDD692DA-09C1-43BB-9245-BDB5BFE74686}

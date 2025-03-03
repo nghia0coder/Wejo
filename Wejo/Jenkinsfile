@@ -1,0 +1,86 @@
+pipeline {
+    agent any
+    environment {
+        PAT_CREDENTIALS_ID = "PAT_Jenkins"
+        DOCKER_CREDENTIALS_ID = "docker-hub"
+        DOCKER_IMAGE_GAME = "lemichael52/wejo_game_service"
+        DOCKER_IMAGE_IDENTITY = "lemichael52/wejo_identity_service"
+        BRANCH_NAME = "feature/WEJO-4-Michael"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${BRANCH_NAME}", 
+                    credentialsId: "${PAT_CREDENTIALS_ID}",
+                    url: 'https://github.com/ltmichael52/Wejo.git'
+                echo "Checked out branch ${BRANCH_NAME}"
+            }
+        }
+
+        stage('Detect Changes') {
+            steps {
+                script {
+                    def changedFiles = sh(script: "git diff --name-only HEAD~1 HEAD", returnStdout: true).trim().split("\n")
+                    env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.GameService.API/") } ? "true" : "false"
+                    env.UPDATE_IDENTITY = changedFiles.any { it.startsWith("Wejo/Wejo.Identity.API/") } ? "true" : "false"
+
+                    echo "Update Game Service: ${env.UPDATE_GAME}"
+                    echo "Update Identity Service: ${env.UPDATE_IDENTITY}"
+                }
+            }
+        }
+
+        stage('Build & Push Updated Service') {
+            steps {
+                script {
+                    if (env.UPDATE_GAME == "true") {
+                        echo "Building and pushing Game Service..."
+                        withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: 'https://index.docker.io/v1/']) {
+                            sh """
+                                cd /var/lib/jenkins/workspace/Wejo/Wejo
+                                docker-compose build game-service
+                                docker push ${DOCKER_IMAGE_GAME}
+                            """
+                        }
+                    }
+                    if (env.UPDATE_IDENTITY == "true") {
+                        echo "Building and pushing Identity Service..."
+                        withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: 'https://index.docker.io/v1/']) {
+                            sh """
+                                cd /var/lib/jenkins/workspace/Wejo/Wejo
+                                docker-compose build identity-service
+                                docker push ${DOCKER_IMAGE_IDENTITY}
+                            """
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Updated Service') {
+            steps {
+                script {
+                    if (env.UPDATE_GAME == "true") {
+                        echo "Deploying updated Game Service..."
+                        sh """
+                        cd /var/lib/jenkins/workspace/Wejo/Wejo
+                        docker-compose stop game-service
+                        docker-compose rm -f game-service
+                        docker-compose up -d game-service
+                        """
+                    }
+                    if (env.UPDATE_IDENTITY == "true") {
+                        echo "Deploying updated Identity Service..."
+                        sh """
+                        cd /var/lib/jenkins/workspace/Wejo/Wejo
+                        docker-compose stop identity-service
+                        docker-compose rm -f identity-service
+                        docker-compose up -d identity-service
+                        """
+                    }
+                }
+            }
+        }
+    }
+}
