@@ -1,4 +1,4 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace Wejo.Common.SeedWork.Dtos;
 
@@ -11,6 +11,6 @@ public class FirebaseSessionDto
     /// <summary>
     /// SessionId
     /// </summary>
-    [JsonPropertyName("SessionId")]
+    [JsonProperty("sessionInfo")]
     public string? SessionId { get; set; }
 }
