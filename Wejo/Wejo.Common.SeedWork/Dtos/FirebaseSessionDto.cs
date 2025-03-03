@@ -9,8 +9,8 @@ namespace Wejo.Common.SeedWork.Dtos;
 public class FirebaseSessionDto
 {
     /// <summary>
-    /// SessionInfo
+    /// SessionId
     /// </summary>
-    [JsonPropertyName("sessionInfo")]
-    public string? SessionInfo { get; set; }
+    [JsonPropertyName("SessionId")]
+    public string? SessionId { get; set; }
 }
