@@ -1,0 +1,108 @@
+pipeline {
+    agent any
+    environment {
+        PAT_CREDENTIALS_ID = "PAT_Jenkins"
+        DOCKER_CREDENTIALS_ID = "docker-hub"
+        DOCKER_IMAGE_GAME = "lemichael52/wejo_game_service"
+        DOCKER_IMAGE_IDENTITY = "lemichael52/wejo_identity_service"
+        BRANCH_NAME = "dev"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${BRANCH_NAME}", 
+                    credentialsId: "${PAT_CREDENTIALS_ID}",
+                    url: 'https://github.com/ltmichael52/Wejo.git'
+                echo "Checked out branch ${BRANCH_NAME}"
+            }
+        }
+
+        stage('Detect Changes') {
+            steps {
+                script {
+                    def changedFiles = sh(
+                        script: "git diff --name-only HEAD~1 HEAD || echo ''",
+                        returnStdout: true
+                    ).trim().split("\n").findAll { it } // Remove empty elements
+
+                    env.UPDATE_COMMON = changedFiles.any { it.startsWith("Wejo/Wejo.Common") } ? "true" : "false"
+                    env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.GameService.API/") || it.startsWith("Wejo/Wejo.GameService.Application/") } ? "true" : "false"
+                    env.UPDATE_IDENTITY = changedFiles.any { it.startsWith("Wejo/Wejo.Identity.API/") || it.startsWith("Wejo/Wejo.Identity.Application/") } ? "true" : "false"
+
+                    echo "Update Game Service: ${env.UPDATE_GAME}"
+                    echo "Update Identity Service: ${env.UPDATE_IDENTITY}"
+                    echo "Update Common Modules: ${env.UPDATE_COMMON}"
+                }
+            }
+        }
+
+        stage('Build & Push Updated Service') {
+            steps {
+                script {
+                    withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: 'https://index.docker.io/v1/']) {
+                        
+                        if (env.UPDATE_COMMON == "true") {
+                            echo "Building and pushing all services..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose build
+                                docker push ${DOCKER_IMAGE_GAME}
+                                docker push ${DOCKER_IMAGE_IDENTITY}
+                            """
+                        } else {
+                            if (env.UPDATE_GAME == "true") {
+                                echo "Building and pushing Game Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build game-service
+                                    docker push ${DOCKER_IMAGE_GAME}
+                                """
+                            }
+                            if (env.UPDATE_IDENTITY == "true") {
+                                echo "Building and pushing Identity Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build identity-service
+                                    docker push ${DOCKER_IMAGE_IDENTITY}
+                                """
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Updated Service') {
+            steps {
+                script {
+                    if(env.UPDATE_COMMON == "true"){
+                        echo "Deploying updated system..."
+                        sh """
+                            cd ${WORKSPACE}/Wejo
+                            docker-compose up -d --build game-service
+                            docker-compose up -d --build identity-service
+                        """
+                    }
+                    else{
+                        if (env.UPDATE_GAME == "true") {
+                            echo "Deploying updated Game Service..."
+                            sh """
+                            cd ${WORKSPACE}/Wejo
+                            docker-compose up -d --build game-service
+                            """
+                        }
+                        if (env.UPDATE_IDENTITY == "true") {
+                            echo "Deploying updated Identity Service..."
+                            sh """
+                            cd ${WORKSPACE}/Wejo
+                            docker-compose up -d --build identity-service
+                            """
+                        }
+                    }
+                    
+                }
+            }
+        }
+    }
+}
