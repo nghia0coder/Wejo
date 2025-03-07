@@ -1,6 +1,6 @@
-@Wejo.GameService.API_HostAddress = http://localhost:5204
+@Wejo.Game.API_HostAddress = http://localhost:5204
 
-GET {{Wejo.GameService.API_HostAddress}}/weatherforecast/
+GET {{Wejo.Game.API_HostAddress}}/weatherforecast/
 Accept: application/json
 
 ###

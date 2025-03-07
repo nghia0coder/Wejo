@@ -1,16 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using Wejo.Common.Domain.Interfaces;
+﻿namespace Wejo.Game.Application.Commands;
 
-namespace Wejo.GameService.Application.Commands
+using Common.Domain.Interfaces;
+
+public abstract class BaseH(IWejoContext context)
 {
-    public abstract class BaseH(IWejoContext context)
-    {
-        protected readonly IWejoContext _context = context;
-    }
-
-
+	protected readonly IWejoContext _context = context;
 }

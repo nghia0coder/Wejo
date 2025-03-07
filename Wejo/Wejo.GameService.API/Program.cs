@@ -1,14 +1,14 @@
 ﻿using Microsoft.EntityFrameworkCore;
 
-namespace Wejo.GameService.API;
+namespace Wejo.Game.API;
 
 using Application;
+using Application.Extensions;
 using Application.Interfaces;
 using Common.Core.Extensions;
 using Common.Domain.Database;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Extensions;
-using Wejo.Identity.Application.Extensions;
 using static Common.SeedWork.Constants.Setting;
 
 /// <summary>

@@ -1,4 +1,4 @@
-﻿namespace Wejo.GameService.Application;
+﻿namespace Wejo.Game.Application;
 
 using Common.SeedWork;
 using Interfaces;
