@@ -9,3 +9,13 @@
 - Add env in stage Detect Changes
 - Add if check in stage Build & Push Updated Service
 - Add if check in stage Deploy Updated Service
+
+# Scaffold Database
+
+dotnet ef dbcontext scaffold "Host={Host};Database={DbName};Username={UserName};Password={Password}" Npgsql.EntityFrameworkCore.PostgreSQL -o Database -c WejoContext
+
+# Notice : 
+
+- When scaffold succced its have message like this : Could not load database collations. 
+- > Just ignore its not affect anything
+- Then, update IWejoContext manual if there is any new dbset. Make sure all done then build all project again

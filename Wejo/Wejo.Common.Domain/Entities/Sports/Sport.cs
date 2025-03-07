@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Wejo.Common.Domain.Entities.Games;
-
-namespace Wejo.Common.Domain.Entities.Sports;
+﻿namespace Wejo.Common.Domain.Entities;
 
 public partial class Sport
 {

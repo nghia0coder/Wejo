@@ -4,10 +4,6 @@ using Microsoft.EntityFrameworkCore.Infrastructure;
 namespace Wejo.Common.Domain.Interfaces;
 
 using Entities;
-using Wejo.Common.Domain.Entities.Games;
-using Wejo.Common.Domain.Entities.Messages;
-using Wejo.Common.Domain.Entities.Sports;
-using Wejo.Common.Domain.Entities.Venues;
 
 /// <summary>
 /// Interface McsgContext
@@ -47,18 +43,23 @@ public interface IWejoContext
 
     #region -- DbSet --
 
-    DbSet<User> Users { get; set; }
     DbSet<Game> Games { get; set; }
 
-    DbSet<GamePlayerDetail> GamePlayerDetails { get; set; }
+    DbSet<GameParticipant> GameParticipants { get; set; }
 
     DbSet<GameType> GameTypes { get; set; }
 
     DbSet<Message> Messages { get; set; }
 
+    DbSet<ParticipantHistory> ParticipantHistories { get; set; }
+
     DbSet<Sport> Sports { get; set; }
 
     DbSet<SportFormat> SportFormats { get; set; }
+
+    DbSet<User> Users { get; set; }
+
+    DbSet<UserLocation> UserLocations { get; set; }
 
     DbSet<Venue> Venues { get; set; }
 

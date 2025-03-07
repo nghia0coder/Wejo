@@ -2,12 +2,8 @@
 
 namespace Wejo.Common.Domain.Database;
 
-using Entities;
-using Interfaces;
-using Wejo.Common.Domain.Entities.Games;
-using Wejo.Common.Domain.Entities.Messages;
-using Wejo.Common.Domain.Entities.Sports;
-using Wejo.Common.Domain.Entities.Venues;
+using Wejo.Common.Domain.Entities;
+using Wejo.Common.Domain.Interfaces;
 
 public partial class WejoContext : DbContext, IWejoContext
 {
@@ -15,15 +11,20 @@ public partial class WejoContext : DbContext, IWejoContext
     {
     }
 
-    public WejoContext(DbContextOptions<WejoContext> options) : base(options) { }
+    public WejoContext(DbContextOptions<WejoContext> options)
+        : base(options)
+    {
+    }
 
     public virtual DbSet<Game> Games { get; set; }
 
-    public virtual DbSet<GamePlayerDetail> GamePlayerDetails { get; set; }
+    public virtual DbSet<GameParticipant> GameParticipants { get; set; }
 
     public virtual DbSet<GameType> GameTypes { get; set; }
 
     public virtual DbSet<Message> Messages { get; set; }
+
+    public virtual DbSet<ParticipantHistory> ParticipantHistories { get; set; }
 
     public virtual DbSet<Sport> Sports { get; set; }
 
@@ -31,16 +32,15 @@ public partial class WejoContext : DbContext, IWejoContext
 
     public virtual DbSet<User> Users { get; set; }
 
+    public virtual DbSet<UserLocation> UserLocations { get; set; }
+
     public virtual DbSet<Venue> Venues { get; set; }
 
-    protected override void OnModelCreating(ModelBuilder builder)
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
-        base.OnModelCreating(builder);
+        modelBuilder.HasPostgresExtension("uuid-ossp");
 
-        //builder.ApplyConfigurationsFromAssembly(typeof(WejoContext).Assembly);
-        builder.HasPostgresExtension("uuid-ossp");
-
-        builder.Entity<Game>(entity =>
+        modelBuilder.Entity<Game>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Game_pkey");
 
@@ -74,24 +74,28 @@ public partial class WejoContext : DbContext, IWejoContext
                 .HasConstraintName("Game_VenueId_fkey");
         });
 
-        builder.Entity<GamePlayerDetail>(entity =>
+        modelBuilder.Entity<GameParticipant>(entity =>
         {
-            entity.HasKey(e => new { e.GameId, e.UserId }).HasName("GamePlayerDetail_pkey");
+            entity.HasKey(e => e.Id).HasName("GameParticipants_pkey");
 
-            entity.ToTable("GamePlayerDetail", "game");
+            entity.ToTable("GameParticipants", "game");
 
-            entity.Property(e => e.CreatedAt)
-                .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone");
-            entity.Property(e => e.Role).HasDefaultValue(0);
-            entity.Property(e => e.Status).HasDefaultValue(0);
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.JoinedAt).HasColumnType("timestamp(0) without time zone");
+            entity.Property(e => e.LeftAt).HasColumnType("timestamp(0) without time zone");
 
-            entity.HasOne(d => d.Game).WithMany(p => p.GamePlayerDetails)
+            entity.HasOne(d => d.Game).WithMany(p => p.GameParticipants)
                 .HasForeignKey(d => d.GameId)
-                .HasConstraintName("GamePlayerDetail_GameId_fkey");
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pk_gameid");
+
+            entity.HasOne(d => d.User).WithMany(p => p.GameParticipants)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pk_userid");
         });
 
-        builder.Entity<GameType>(entity =>
+        modelBuilder.Entity<GameType>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("GameType_pkey");
 
@@ -100,7 +104,7 @@ public partial class WejoContext : DbContext, IWejoContext
             entity.Property(e => e.NameType).HasMaxLength(255);
         });
 
-        builder.Entity<Message>(entity =>
+        modelBuilder.Entity<Message>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Message_pkey");
 
@@ -118,7 +122,22 @@ public partial class WejoContext : DbContext, IWejoContext
                 .HasConstraintName("Message_ParentId_fkey");
         });
 
-        builder.Entity<Sport>(entity =>
+        modelBuilder.Entity<ParticipantHistory>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("ParticipantHistory_pkey");
+
+            entity.ToTable("ParticipantHistory", "game");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Details).HasMaxLength(255);
+
+            entity.HasOne(d => d.Participant).WithMany(p => p.ParticipantHistories)
+                .HasForeignKey(d => d.ParticipantId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("pk_participantid");
+        });
+
+        modelBuilder.Entity<Sport>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Sport_pkey");
 
@@ -129,7 +148,7 @@ public partial class WejoContext : DbContext, IWejoContext
             entity.Property(e => e.Name).HasMaxLength(255);
         });
 
-        builder.Entity<SportFormat>(entity =>
+        modelBuilder.Entity<SportFormat>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("GameFormat_pkey");
 
@@ -145,17 +164,30 @@ public partial class WejoContext : DbContext, IWejoContext
                 .HasConstraintName("GameFormat_SportId_fkey");
         });
 
-        builder.Entity<User>(entity =>
+        modelBuilder.Entity<User>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Users_pkey");
 
-            entity.ToTable("Users", "identity");
-
-            entity.Property(e => e.Id).HasColumnType("text").ValueGeneratedNever();
-
+            entity.ToTable("User", "identity");
         });
 
-        builder.Entity<Venue>(entity =>
+        modelBuilder.Entity<UserLocation>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("UserLocation_pkey");
+
+            entity.ToTable("UserLocation", "identity");
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.Latitude).HasPrecision(10, 6);
+            entity.Property(e => e.Longitude).HasPrecision(10, 6);
+
+            entity.HasOne(d => d.User).WithMany(p => p.UserLocations)
+                .HasForeignKey(d => d.UserId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("fk_userId");
+        });
+
+        modelBuilder.Entity<Venue>(entity =>
         {
             entity.HasKey(e => e.Id).HasName("Venue_pkey");
 
@@ -165,5 +197,8 @@ public partial class WejoContext : DbContext, IWejoContext
             entity.Property(e => e.Name).HasMaxLength(255);
         });
 
+        OnModelCreatingPartial(modelBuilder);
     }
+
+    partial void OnModelCreatingPartial(ModelBuilder modelBuilder);
 }

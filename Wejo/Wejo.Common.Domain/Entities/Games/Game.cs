@@ -1,7 +1,4 @@
-﻿using Wejo.Common.Domain.Entities.Sports;
-using Wejo.Common.Domain.Entities.Venues;
-
-namespace Wejo.Common.Domain.Entities.Games;
+﻿namespace Wejo.Common.Domain.Entities;
 
 public partial class Game
 {
@@ -45,7 +42,11 @@ public partial class Game
 
     public string? Description { get; set; }
 
-    public virtual ICollection<GamePlayerDetail> GamePlayerDetails { get; set; } = new List<GamePlayerDetail>();
+    public double? Longitude { get; set; }
+
+    public double? Latitude { get; set; }
+
+    public virtual ICollection<GameParticipant> GameParticipants { get; set; } = new List<GameParticipant>();
 
     public virtual GameType? GameType { get; set; }
 

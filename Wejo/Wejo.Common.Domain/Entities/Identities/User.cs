@@ -1,10 +1,10 @@
 ﻿namespace Wejo.Common.Domain.Entities;
 
-using Core.Enums;
+using Wejo.Common.Core.Enums;
 
 public partial class User
 {
-    public string? Id { get; set; }
+    public string Id { get; set; } = null!;
 
     public string? FirstName { get; set; }
 
@@ -43,4 +43,8 @@ public partial class User
     public bool? PhoneNumberConfirmed { get; set; }
 
     public bool EmailConfirmed { get; set; }
+
+    public virtual ICollection<GameParticipant> GameParticipants { get; set; } = new List<GameParticipant>();
+
+    public virtual ICollection<UserLocation> UserLocations { get; set; } = new List<UserLocation>();
 }

@@ -1,7 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-
-namespace Wejo.Common.Domain.Entities.Messages;
+﻿namespace Wejo.Common.Domain.Entities;
 
 public partial class Message
 {

@@ -3,7 +3,7 @@
     public static class GameExtensions
     {
         // ✅ Create a new Game instance
-        public static Games.Game CreateGame(
+        public static Game CreateGame(
             int sportId,
             string createdBy,
             int? sportFormatId,
@@ -23,7 +23,7 @@
             int? status,
             string? description)
         {
-            return new Games.Game
+            return new Game
             {
                 Id = Guid.NewGuid(),
                 SportId = sportId,
