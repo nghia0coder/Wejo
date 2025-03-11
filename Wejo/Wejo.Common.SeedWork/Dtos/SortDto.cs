@@ -79,7 +79,7 @@ public class SortDto
     /// <summary>
     /// Descending
     /// </summary>
-    public const string Descending = "DESC";
+    public const string Descending = "DES";
 
     #endregion
 }

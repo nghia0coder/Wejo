@@ -1,6 +1,6 @@
-﻿using Wejo.Common.SeedWork.Dtos;
+﻿namespace Wejo.Common.Domain.Entities;
 
-namespace Wejo.Common.Domain.Entities;
+using SeedWork.Dtos;
 
 partial class Game
 {

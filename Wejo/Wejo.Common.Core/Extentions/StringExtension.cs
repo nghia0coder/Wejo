@@ -109,5 +109,30 @@ public static class StringExtension
         return res;
     }
 
+    /// <summary>
+    /// Convert from JSON to instance of T
+    /// </summary>
+    /// <typeparam name="T">Data type</typeparam>
+    /// <param name="s">JSON data</param>
+    /// <returns>Return to instance of T</returns>
+    public static T? ToInstNull<T>(this string? s) where T : new()
+    {
+        if (string.IsNullOrWhiteSpace(s))
+        {
+            return default;
+        }
+
+        try
+        {
+            return JsonConvert.DeserializeObject<T>(s);
+        }
+        catch (Exception ex)
+        {
+            var msg = ex.InnerException != null ? ex.InnerException.Message : ex.Message;
+        }
+
+        return default;
+    }
+
     #endregion
 }

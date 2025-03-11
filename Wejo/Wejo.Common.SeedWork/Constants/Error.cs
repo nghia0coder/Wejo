@@ -50,6 +50,26 @@ public static class Error
 
     #region -- E2xx --
 
+    /// <summary>
+    /// Game not found
+    /// </summary>
+    public const string E201 = "Game not found";
+
+    /// <summary>
+    /// Game not found
+    /// </summary>
+    public const string E202 = "User already has an active or pending request for this game";
+
+    /// <summary>
+    /// Partcipant not found
+    /// </summary>
+    public const string E203 = "Partcipant not found";
+
+    /// <summary>
+    /// Only host can accept the player
+    /// </summary>
+    public const string E204 = "Only host can accept the player";
+
     #endregion
 
     #region -- E3xx --

@@ -10,7 +10,7 @@ using Request;
 /// <summary>
 /// DI extension
 /// </summary>
-public static class DiGameExtensions
+public static class DiGameParticipantExtensions
 {
     #region -- Methods --
 
@@ -19,10 +19,10 @@ public static class DiGameExtensions
     /// </summary>
     /// <param name="p">MediatRServiceConfiguration</param>
     /// <param name="life">ServiceLifetime</param>
-    public static void AddDiGame(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
+    public static void AddDiGameParticipant(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
-        p.AddGameCommands(life);
-        p.AddGameQueries(life);
+        p.AddGameParticipantCommands(life);
+        p.AddGameParticipantQueries(life);
     }
 
     /// <summary>
@@ -30,9 +30,11 @@ public static class DiGameExtensions
     /// </summary>
     /// <param name="p">MediatRServiceConfiguration</param>
     /// <param name="life">ServiceLifetime</param>
-    public static void AddGameCommands(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
+    public static void AddGameParticipantCommands(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
-        p.AddBehavior<IRequestHandler<GameCreateR, SingleResponse>, GameCreateH>(life);
+        p.AddBehavior<IRequestHandler<GameParticipantCreateR, SingleResponse>, GameParticipantCreateH>(life);
+        p.AddBehavior<IRequestHandler<GameParticipantUpdateR, SingleResponse>, GameParticipantUpdateH>(life);
+        p.AddBehavior<IRequestHandler<GameParticipantViewR, SingleResponse>, GameParticipantViewH>(life);
     }
 
     /// <summary>
@@ -40,7 +42,7 @@ public static class DiGameExtensions
     /// </summary>
     /// <param name="p">MediatRServiceConfiguration</param>
     /// <param name="life">ServiceLifetime</param>
-    public static void AddGameQueries(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
+    public static void AddGameParticipantQueries(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
     }
 

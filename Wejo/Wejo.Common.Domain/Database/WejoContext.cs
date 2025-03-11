@@ -83,6 +83,8 @@ public partial class WejoContext : DbContext, IWejoContext
             entity.Property(e => e.Id).ValueGeneratedNever();
             entity.Property(e => e.JoinedAt).HasColumnType("timestamp(0) without time zone");
             entity.Property(e => e.LeftAt).HasColumnType("timestamp(0) without time zone");
+            entity.Property(e => e.ModifiedOn).HasColumnType("timestamp(0) without time zone");
+            entity.Property(e => e.CreatedOn).HasColumnType("timestamp(0) without time zone");
 
             entity.HasOne(d => d.Game).WithMany(p => p.GameParticipants)
                 .HasForeignKey(d => d.GameId)

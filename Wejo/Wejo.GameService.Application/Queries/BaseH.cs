@@ -1,4 +1,4 @@
-﻿namespace Wejo.Game.Application.Commands;
+﻿namespace Wejo.Game.Application.Queries;
 
 using Common.Domain.Interfaces;
 

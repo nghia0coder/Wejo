@@ -32,13 +32,4 @@ public class IdBaseR : BaseR, IEntityId<Guid>
     public virtual Guid Id { get; set; }
 
     #endregion
-
-    #region -- Properties --
-
-    /// <summary>
-    /// HashId
-    /// </summary>
-    public virtual string? HashId { get; set; }
-
-    #endregion
 }

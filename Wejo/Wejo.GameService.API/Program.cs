@@ -63,11 +63,15 @@ public class Program
         {
             p.RegisterServicesFromAssembly(me.Assembly);
 
-            p.AddDiGame();
+            p.AddDiGameParticipant();
         });
         #endregion
 
         #region -- Setup token --
+        var firebaseProjectId = builder.Configuration["Firebase:ProjectId"];
+        builder.Services.AddBearerAuthentication(firebaseProjectId);
+        builder.Services.AddResponseCaching();
+
         // Cookie name
         builder.Services.ConfigureApplicationCookie(p => { p.Cookie.Name = _prefix; });
         #endregion

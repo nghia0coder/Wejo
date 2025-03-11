@@ -20,7 +20,7 @@ public partial class User
 
     public string? Bio { get; set; }
 
-    public int? Level { get; set; }
+    public PlayerLevel? Level { get; set; }
 
     public string? Avatar { get; set; }
 
