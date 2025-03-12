@@ -1,0 +1,6 @@
+@Wejo.Backgroud.Job_HostAddress = http://localhost:5189
+
+GET {{Wejo.Backgroud.Job_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

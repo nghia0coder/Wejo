@@ -30,6 +30,10 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Devops", "Devops", "{8EC462
 		Readme.md = Readme.md
 	EndProjectSection
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Job", "Job", "{F9ED2B47-67E1-4A23-A7B2-6903C308C6A2}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Background.Job", "Wejo.Backgroud.Job\Wejo.Background.Job.csproj", "{3DCCB7B0-3B8F-4D2D-8D11-3BFAB1062795}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -64,6 +68,10 @@ Global
 		{82731755-4970-4DC5-851A-C278BF53C099}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{82731755-4970-4DC5-851A-C278BF53C099}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{82731755-4970-4DC5-851A-C278BF53C099}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3DCCB7B0-3B8F-4D2D-8D11-3BFAB1062795}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3DCCB7B0-3B8F-4D2D-8D11-3BFAB1062795}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3DCCB7B0-3B8F-4D2D-8D11-3BFAB1062795}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3DCCB7B0-3B8F-4D2D-8D11-3BFAB1062795}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -76,6 +84,7 @@ Global
 		{FC375051-9E20-451A-B186-48E6074C5064} = {0AF25886-5992-4C14-8222-BF23671CB07D}
 		{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150} = {F0E42396-F7F3-472D-AECF-DBE9E6EFE57C}
 		{82731755-4970-4DC5-851A-C278BF53C099} = {F0E42396-F7F3-472D-AECF-DBE9E6EFE57C}
+		{3DCCB7B0-3B8F-4D2D-8D11-3BFAB1062795} = {F9ED2B47-67E1-4A23-A7B2-6903C308C6A2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {BDD692DA-09C1-43BB-9245-BDB5BFE74686}
