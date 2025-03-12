@@ -18,6 +18,32 @@ partial class User
     /// <summary>
     /// Update
     /// </summary>
+    /// <param name="id"></param>
+    /// <param name="firstName"></param>
+    /// <param name="lastName"></param>
+    /// <param name="phoneNumber"></param>
+    /// <param name="phoneNumberConfirmed"></param>
+    /// <param name="email"></param>
+    /// <param name="emailConfirmed"></param>
+    public static User Create(string id, string? firstName, string? lastName, string? phoneNumber, bool? phoneNumberConfirmed, string? email, bool? emailConfirmed)
+    {
+        var res = new User
+        {
+            Id = id,
+            FirstName = firstName,
+            LastName = lastName,
+            PhoneNumber = phoneNumber,
+            PhoneNumberConfirmed = phoneNumberConfirmed,
+            Email = email,
+            EmailConfirmed = emailConfirmed
+        };
+
+        return res;
+    }
+
+    /// <summary>
+    /// Update
+    /// </summary>
     /// <param name="firstName"></param>
     /// <param name="lastName"></param>
     /// <param name="bio"></param>

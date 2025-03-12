@@ -42,7 +42,7 @@ public partial class User
 
     public bool? PhoneNumberConfirmed { get; set; }
 
-    public bool EmailConfirmed { get; set; }
+    public bool? EmailConfirmed { get; set; }
 
     public virtual ICollection<GameParticipant> GameParticipants { get; set; } = new List<GameParticipant>();
 

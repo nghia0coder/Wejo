@@ -37,6 +37,7 @@ public static class DiUserExtension
         p.AddBehavior<IRequestHandler<UserVerifyOtpR, SingleResponse>, UserVerifyOtpH>(life);
         p.AddBehavior<IRequestHandler<UserUpdateR, SingleResponse>, UserUpdateH>(life);
         p.AddBehavior<IRequestHandler<UserLoginSocialR, SingleResponse>, UserLoginSocialH>(life);
+        p.AddBehavior<IRequestHandler<UserCreateR, SingleResponse>, UserCreateH>(life);
     }
 
     /// <summary>

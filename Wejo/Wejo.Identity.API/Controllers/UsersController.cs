@@ -33,6 +33,22 @@ public class UsersController : BaseController
     public UsersController(IMediator mediator, ISetting setting) : base(mediator) { _setting = setting; }
 
     /// <summary>
+    /// Create
+    /// </summary>
+    /// <returns>Return the result</returns>
+    [HttpPost("Create")]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> Create([FromBody] UserCreateR request)
+    {
+        request.Analyze(HttpContext);
+
+        var response = await _mediator.Send(request);
+        response.ReturnUrl = AbsoluteUri;
+
+        return Ok(response);
+    }
+
+    /// <summary>
     /// View
     /// </summary>
     /// <returns>Return the result</returns>

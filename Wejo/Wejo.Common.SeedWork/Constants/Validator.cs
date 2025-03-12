@@ -18,6 +18,16 @@ public class Validator
     public const string MaximumLength = "exceeds the authorized size";
 
     /// <summary>
+    /// Invalid Length
+    /// </summary>
+    public const string InvalidLength = "Invalid Length";
+
+    /// <summary>
+    /// uid Length
+    /// </summary>
+    public const ushort uid = 28;
+
+    /// <summary>
     /// PhoneNumber 
     /// </summary>
     public class PhoneNumber
