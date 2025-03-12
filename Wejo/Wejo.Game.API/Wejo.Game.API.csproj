@@ -25,7 +25,7 @@
 
 	<ItemGroup>
 		<ProjectReference Include="..\Wejo.Common.Domain\Wejo.Common.Domain.csproj" />
-		<ProjectReference Include="..\Wejo.GameService.Application\Wejo.Game.Application.csproj" />
+		<ProjectReference Include="..\Wejo.Game.Application\Wejo.Game.Application.csproj" />
 	</ItemGroup>
 
 </Project>

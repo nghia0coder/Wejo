@@ -3,12 +3,12 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
-namespace Wejo.Game.Application.Controllers;
+namespace Wejo.Game.API.Controllers;
 
 using Common.Core.Controllers;
 using Common.SeedWork.Responses;
-using Interfaces;
-using Request;
+using Game.Application.Interfaces;
+using Game.Application.Request;
 
 /// <summary>
 /// User controller
