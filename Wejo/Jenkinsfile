@@ -27,7 +27,7 @@ pipeline {
                     ).trim().split("\n").findAll { it } // Remove empty elements
 
                     env.UPDATE_COMMON = changedFiles.any { it.startsWith("Wejo/Wejo.Common") } ? "true" : "false"
-                    env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.GameService.API/") || it.startsWith("Wejo/Wejo.GameService.Application/") } ? "true" : "false"
+                    env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.Game.API/") || it.startsWith("Wejo/Wejo.Game.Application/") } ? "true" : "false"
                     env.UPDATE_IDENTITY = changedFiles.any { it.startsWith("Wejo/Wejo.Identity.API/") || it.startsWith("Wejo/Wejo.Identity.Application/") } ? "true" : "false"
 
                     echo "Update Game Service: ${env.UPDATE_GAME}"

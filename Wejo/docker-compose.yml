@@ -5,7 +5,7 @@ services:
     image: lemichael52/wejo_game_service 
     build:
       context: .
-      dockerfile: Wejo.GameService.API/Dockerfile
+      dockerfile: Wejo.Game.API/Dockerfile
       args:
         ENVIRONMENT: Development
     container_name: wejo_game_service

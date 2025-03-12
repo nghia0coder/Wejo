@@ -19,9 +19,9 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Common.Domain", "Wejo.
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Game", "Game", "{F0E42396-F7F3-472D-AECF-DBE9E6EFE57C}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.GameService.Application", "Wejo.GameService.Application\Wejo.GameService.Application.csproj", "{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Game.Application", "Wejo.GameService.Application\Wejo.Game.Application.csproj", "{A6DE4081-8B5E-4586-ACDA-A19FEC0CD150}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.GameService.API", "Wejo.GameService.API\Wejo.GameService.API.csproj", "{82731755-4970-4DC5-851A-C278BF53C099}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Wejo.Game.API", "Wejo.GameService.API\Wejo.Game.API.csproj", "{82731755-4970-4DC5-851A-C278BF53C099}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Devops", "Devops", "{8EC462FD-D22E-90A8-E5CE-7E832BA40C5D}"
 	ProjectSection(SolutionItems) = preProject
