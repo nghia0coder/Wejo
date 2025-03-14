@@ -48,6 +48,7 @@ public static class DiUserExtension
     public static void AddUserQueries(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
         p.AddBehavior<IRequestHandler<UserViewR, SingleResponse>, UserViewH>(life);
+        p.AddBehavior<IRequestHandler<UserCheckExistR, SingleResponse>, UserCheckExistH>(life);
     }
 
     #endregion

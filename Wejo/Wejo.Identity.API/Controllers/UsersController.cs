@@ -128,6 +128,22 @@ public class UsersController : BaseController
         return Ok(response);
     }
 
+    /// <summary>
+    /// Check Exist
+    /// </summary>
+    /// <returns>Return the result</returns>
+    [HttpPatch("check-exist")]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> CheckExist([FromBody] UserCheckExistR request)
+    {
+        request.Analyze(HttpContext);
+
+        var response = await _mediator.Send(request);
+        response.ReturnUrl = AbsoluteUri;
+
+        return Ok(response);
+    }
+
     #endregion
 }
 

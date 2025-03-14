@@ -14,10 +14,6 @@ public partial class User
 
     public Gender? Gender { get; set; }
 
-    public string? RefreshToken { get; set; }
-
-    public DateTime? RefreshTokenExpiryTime { get; set; }
-
     public string? Bio { get; set; }
 
     public PlayerLevel? Level { get; set; }
