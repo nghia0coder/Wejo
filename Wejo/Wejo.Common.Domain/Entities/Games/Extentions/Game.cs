@@ -44,8 +44,8 @@ partial class Game
         int? gameTypeId,
         string area,
         DateOnly date,
-        TimeOnly startTime,
-        TimeOnly endTime,
+        DateTime startTime,
+        DateTime endTime,
         bool gameAccess,
         bool bringEquipment,
         bool costShared,
@@ -173,12 +173,12 @@ partial class Game
         /// <summary>
         /// StartTime
         /// </summary>
-        public TimeOnly StartTime { get; set; }
+        public DateTime StartTime { get; set; }
 
         /// <summary>
         /// EndTime
         /// </summary>
-        public TimeOnly EndTime { get; set; }
+        public DateTime EndTime { get; set; }
 
         /// <summary>
         /// GameAccess
