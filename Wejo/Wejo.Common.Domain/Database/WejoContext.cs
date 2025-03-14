@@ -55,7 +55,6 @@ public partial class WejoContext : DbContext, IWejoContext
                 .HasColumnType("timestamp without time zone");
             entity.Property(e => e.GameAccess).HasDefaultValue(true);
             entity.Property(e => e.GameSkill).HasDefaultValue(false);
-            entity.Property(e => e.Status).HasDefaultValue(0);
 
             entity.HasOne(d => d.GameType).WithMany(p => p.Games)
                 .HasForeignKey(d => d.GameTypeId)

@@ -1,5 +1,6 @@
 ﻿namespace Wejo.Common.Domain.Entities;
 
+using Common.Core.Enums;
 using SeedWork.Dtos;
 
 partial class Game
@@ -53,7 +54,7 @@ partial class Game
         int? skillStart,
         int? skillEnd,
         int? totalPlayer,
-        int? status,
+        GameStatus status,
         string? description)
     {
 
@@ -218,7 +219,7 @@ partial class Game
         /// <summary>
         /// Status
         /// </summary>
-        public int? Status { get; set; }
+        public GameStatus? Status { get; set; }
 
         /// <summary>
         /// Description

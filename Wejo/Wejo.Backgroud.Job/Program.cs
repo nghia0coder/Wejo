@@ -1,13 +1,16 @@
+using Hangfire;
+using Hangfire.PostgreSql;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace Wejo.Background.Job;
 
 using Common.Core.Extensions;
+using Common.Domain.Database;
+using Common.Domain.Interfaces;
 using Common.SeedWork.Extensions;
-using Microsoft.EntityFrameworkCore;
-using Wejo.Background.Job.Interfaces;
-using Wejo.Common.Domain.Database;
-using Wejo.Common.Domain.Interfaces;
+using Interfaces;
+using Services;
 using static Common.SeedWork.Constants.Setting;
 
 /// <summary>
@@ -25,13 +28,6 @@ public class Program
     {
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddHealthChecks();
-
-        // Load configuration environment
-        var environment = builder.Environment.EnvironmentName;
-        builder.Configuration
-            .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
-            .AddJsonFile($"appsettings.{environment}.json", optional: true, reloadOnChange: true)
-            .AddEnvironmentVariables();
 
         var me = typeof(Program);
         var assembly = me.Assembly.GetName().Name;
@@ -51,13 +47,15 @@ public class Program
         // Setting
         builder.Services.AddSingleton<ISetting>(st!);
 
-        //Azure Blob Storage
-        var blobConnString = builder.Configuration.GetSection("AzureBlobStorage:BlobStorageConnectionStrings").Value!;
-        builder.Services.AddAzureBlobStorage(blobConnString);
+        // Hangfire 
+        builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(p => p.UseNpgsqlConnection(csDb!)));
+        builder.Services.AddHangfireServer();
 
         // DbContext
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
         builder.Services.AddScoped<IWejoContext>(p => p.GetService<WejoContext>()!);
+
+        builder.Services.AddScoped<IGameService, GameService>();
 
         // MediatR
         builder.Services.AddMediatR(p =>
@@ -137,6 +135,19 @@ public class Program
         }
         #endregion
 
+        app.UseHangfireDashboard();
+
+        RecurringJob.AddOrUpdate<IGameService>(
+                recurringJobId: "UpdateGameStatusJob",
+                methodCall: service => service.UpdateGameStatusAsync(),
+                cronExpression: Cron.Minutely,
+                options: new RecurringJobOptions
+                {
+                    TimeZone = TimeZoneInfo.Utc,
+                }
+        );
+
+
         app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
@@ -144,6 +155,8 @@ public class Program
         app.MapControllers();
         app.MapHealthChecks("/health");
         app.UseResponseCaching();
+
+        app.Run();
     }
 
     #endregion
