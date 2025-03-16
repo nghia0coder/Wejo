@@ -1,6 +1,7 @@
 ﻿namespace Wejo.Game.Application.Request;
 
 using Common.Core.Requests;
+using Wejo.Common.Core.Enums;
 
 public class GameCreateR : BaseR
 {
@@ -20,6 +21,6 @@ public class GameCreateR : BaseR
     public int? SkillStart { get; set; }
     public int? SkillEnd { get; set; }
     public int? TotalPlayer { get; set; }
-    public int? Status { get; set; }
+    public GameStatus Status { get; set; }
     public string? Description { get; set; }
 }

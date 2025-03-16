@@ -43,4 +43,8 @@ public partial class User
     public virtual ICollection<GameParticipant> GameParticipants { get; set; } = new List<GameParticipant>();
 
     public virtual ICollection<UserLocation> UserLocations { get; set; } = new List<UserLocation>();
+
+    public virtual ICollection<UserPlaypal> UserPlaypalUserId1Navigations { get; set; } = new List<UserPlaypal>();
+
+    public virtual ICollection<UserPlaypal> UserPlaypalUserId2Navigations { get; set; } = new List<UserPlaypal>();
 }

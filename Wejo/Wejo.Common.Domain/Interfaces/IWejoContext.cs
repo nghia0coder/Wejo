@@ -61,6 +61,8 @@ public interface IWejoContext
 
     DbSet<UserLocation> UserLocations { get; set; }
 
+    DbSet<UserPlaypal> UserPlaypals { get; set; }
+
     DbSet<Venue> Venues { get; set; }
 
     #endregion

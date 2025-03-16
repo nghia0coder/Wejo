@@ -50,6 +50,8 @@ public partial class Game
 
     public virtual ICollection<GameParticipant> GameParticipants { get; set; } = new List<GameParticipant>();
 
+    public virtual ICollection<UserPlaypal> UserPlaypals { get; set; } = new List<UserPlaypal>();
+
     public virtual GameType? GameType { get; set; }
 
     public virtual Sport Sport { get; set; } = null!;

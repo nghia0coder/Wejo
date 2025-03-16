@@ -34,6 +34,8 @@ public partial class WejoContext : DbContext, IWejoContext
 
     public virtual DbSet<UserLocation> UserLocations { get; set; }
 
+    public virtual DbSet<UserPlaypal> UserPlaypals { get; set; }
+
     public virtual DbSet<Venue> Venues { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -186,6 +188,32 @@ public partial class WejoContext : DbContext, IWejoContext
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_userId");
+        });
+
+        modelBuilder.Entity<UserPlaypal>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("UserPlaypal_pkey");
+
+            entity.ToTable("UserPlaypal", "identity");
+
+            entity.HasIndex(e => new { e.UserId1, e.UserId2 }, "uq_playpals_users").IsUnique();
+
+            entity.Property(e => e.Id).ValueGeneratedNever();
+            entity.Property(e => e.CreatedOn).HasColumnType("timestamp without time zone");
+            entity.Property(e => e.UserId1).HasMaxLength(28);
+            entity.Property(e => e.UserId2).HasMaxLength(28);
+
+            entity.HasOne(d => d.Game).WithMany(p => p.UserPlaypals)
+                .HasForeignKey(d => d.GameId)
+                .HasConstraintName("FK_Playpals_GameId");
+
+            entity.HasOne(d => d.UserId1Navigation).WithMany(p => p.UserPlaypalUserId1Navigations)
+                .HasForeignKey(d => d.UserId1)
+                .HasConstraintName("FK_Playpals_UserId1");
+
+            entity.HasOne(d => d.UserId2Navigation).WithMany(p => p.UserPlaypalUserId2Navigations)
+                .HasForeignKey(d => d.UserId2)
+                .HasConstraintName("FK_Playpals_UserId2");
         });
 
         modelBuilder.Entity<Venue>(entity =>
