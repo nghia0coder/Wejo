@@ -19,14 +19,13 @@ partial class GameParticipant
     /// </summary>
     /// <param name="gameId"></param>
     /// <param name="gameId"></param>
-    /// <param name="playerStatus"></param>
-    public static GameParticipant Create(Guid gameId, string userId)
+    public static GameParticipant Create(Guid gameId, string userId, PlayerStatus playerStatus)
     {
         var res = new GameParticipant
         {
             GameId = gameId,
             UserId = userId,
-            Status = PlayerStatus.Pending,
+            Status = playerStatus,
             JoinedAt = DateTime.UtcNow
         };
 
@@ -36,10 +35,7 @@ partial class GameParticipant
     /// <summary>
     /// Update
     /// </summary>
-    /// <param name="firstName"></param>
-    /// <param name="lastName"></param>
-    /// <param name="bio"></param>
-    /// <param name="gender"></param>
+    /// <param name="playerStatus"></param>
     public void Update(PlayerStatus playerStatus)
     {
         Status = playerStatus;

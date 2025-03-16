@@ -2,6 +2,7 @@
 
 namespace Wejo.Game.Application.Commands;
 
+using Common.Core.Enums;
 using Common.Domain.Entities;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Responses;
@@ -37,7 +38,11 @@ public class GameCreateH : BaseH, IRequestHandler<GameCreateR, SingleResponse>
         );
 
         await _context.Games.AddAsync(ett, cancellationToken);
-        await _context.SaveChangesAsync(default);
+
+        var gameParticipant = GameParticipant.Create(ett.Id, ett.CreatedBy, PlayerStatus.Accepted);
+        await _context.GameParticipants.AddAsync(gameParticipant, cancellationToken);
+
+        await _context.SaveChangesAsync(cancellationToken);
 
         return res.SetSuccess(ett.ToViewDto());
     }

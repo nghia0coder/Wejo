@@ -1,7 +1,10 @@
 ﻿using Newtonsoft.Json;
 using System.Collections;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace Wejo.Common.Core.Extensions;
+
 /// <summary>
 /// String extension for using [this string] only
 /// </summary>
@@ -132,6 +135,20 @@ public static class StringExtension
         }
 
         return default;
+    }
+
+    /// <summary>
+    /// Convert a string UID to a hashed long value
+    /// </summary>
+    /// <param name="uid">The UID string</param>
+    /// <returns>Return to instance of T</returns>
+    public static long ToUid(this string uid)
+    {
+        using (var sha256 = SHA256.Create())
+        {
+            byte[] hashBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(uid));
+            return BitConverter.ToInt64(hashBytes, 0);
+        }
     }
 
     #endregion

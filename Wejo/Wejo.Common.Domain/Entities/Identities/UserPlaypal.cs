@@ -1,9 +1,9 @@
 ﻿namespace Wejo.Common.Domain.Entities;
 
-public partial class UserPlaypal
-{
-    public Guid Id { get; set; }
+using SeedWork;
 
+public partial class UserPlaypal : EntityId
+{
     public string? UserId1 { get; set; }
 
     public string? UserId2 { get; set; }

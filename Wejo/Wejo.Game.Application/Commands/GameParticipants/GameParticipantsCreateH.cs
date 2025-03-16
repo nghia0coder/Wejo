@@ -11,6 +11,7 @@ using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
 using Request;
 using Validators;
+using Wejo.Common.Core.Enums;
 using static Common.SeedWork.Constants.Error;
 
 /// <summary>
@@ -70,7 +71,7 @@ public class GameParticipantCreateH : BaseH, IRequestHandler<GameParticipantCrea
         }
         #endregion
 
-        var ett = GameParticipant.Create(gameId, userId);
+        var ett = GameParticipant.Create(gameId, userId, PlayerStatus.Pending);
 
         await _context.GameParticipants.AddAsync(ett, cancellationToken);
         await _context.SaveChangesAsync(default);
