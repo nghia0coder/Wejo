@@ -22,7 +22,6 @@ services:
       - Wejo_Ide_DevMode=TRUE
       - Wejo_Ide_Protocols="Http1_8081"
       - ASPNETCORE_ENVIRONMENT=Development
-
   identity-service:
     image: lemichael52/wejo_identity_service
     build:
@@ -45,4 +44,28 @@ services:
       - Wejo_Ide_SwaggerEnabled=TRUE
       - Wejo_Ide_DevMode=TRUE
       - Wejo_Ide_Protocols="Http1_8080"
+      - ASPNETCORE_ENVIRONMENT=Development
+  job-service:
+    image: lemichael52/wejo_job_service
+    build:
+      context: .
+      dockerfile: Wejo.Backgroud.Job/Dockerfile
+      args:
+        ENVIRONMENT: Development
+    container_name: wejo_job_service
+    ports:
+      - "8082:8082"  # First argument mapping for job-service
+    depends_on:
+      - identity-service
+      - game-service
+    environment:
+      - Wejo_Com_Environment=local
+      - Wejo_Job_Db_Host=34.142.173.238
+      - Wejo_Job_Db_Port=5432
+      - Wejo_Job_Db_Name=dev_wejo
+      - Wejo_Job_Db_UserName=3boyteam
+      - Wejo_Job_Db_Password=QwerPoiu@2025
+      - Wejo_Job_SwaggerEnabled=TRUE
+      - Wejo_Job_DevMode=TRUE
+      - Wejo_Job_Protocols="Http1_8080"
       - ASPNETCORE_ENVIRONMENT=Development

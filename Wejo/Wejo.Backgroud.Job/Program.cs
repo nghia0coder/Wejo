@@ -1,7 +1,6 @@
 using Hangfire;
 using Hangfire.PostgreSql;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi.Models;
 
 namespace Wejo.Background.Job;
 
@@ -13,17 +12,8 @@ using Interfaces;
 using Services;
 using static Common.SeedWork.Constants.Setting;
 
-/// <summary>
-/// Program
-/// </summary>
 public class Program
 {
-    #region -- Methods --
-
-    /// <summary>
-    /// Main
-    /// </summary>
-    /// <param name="args">Arguments</param>
     public static void Main(string[] args)
     {
         var builder = WebApplication.CreateBuilder(args);
@@ -36,87 +26,31 @@ public class Program
         var st = _prefix.ConvertEnvironmentVariable<Setting>(CommonPrefix);
         st.Prefix = _prefix;
 
-        // Load connection string appsettings.json
+        // Load connection string from appsettings.json
         var config = new ConfigurationBuilder().AddConfiguration(builder.Configuration).Build();
         var cs = config.GetConnectionString("DefaultConnection");
 
         // Update connection string
         var csDb = cs.SetDbParams(st.Db);
 
-        #region -- Setup DI --
-        // Setting
+        // Setup Dependency Injection
         builder.Services.AddSingleton<ISetting>(st!);
-
-        // Hangfire 
         builder.Services.AddHangfire(config => config.UsePostgreSqlStorage(p => p.UseNpgsqlConnection(csDb!)));
         builder.Services.AddHangfireServer();
-
-        // DbContext
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
         builder.Services.AddScoped<IWejoContext>(p => p.GetService<WejoContext>()!);
-
         builder.Services.AddScoped<IGameService, GameService>();
 
-        // MediatR
-        builder.Services.AddMediatR(p =>
-        {
-            p.RegisterServicesFromAssembly(me.Assembly);
-        });
-        #endregion
-
-        #region -- Setup token --
-        var firebaseProjectId = builder.Configuration["Firebase:ProjectId"];
-        builder.Services.AddBearerAuthentication(firebaseProjectId);
-        builder.Services.AddResponseCaching();
-
-        // Cookie name
-        builder.Services.ConfigureApplicationCookie(p => { p.Cookie.Name = _prefix; });
-        #endregion
-
-        builder.Services.AddControllers();
-
-        // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(p => { p.EnableAnnotations(); });
 
-        builder.Services.AddSwaggerGen(options =>
-        {
-            options.EnableAnnotations();
-
-            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
-            {
-                Name = "Authorization",
-                Description = "Enter JWT Bearer token **_only_**",
-                In = ParameterLocation.Header,
-                Type = SecuritySchemeType.Http,
-                Scheme = "bearer",
-                BearerFormat = "JWT"
-            });
-
-            options.AddSecurityRequirement(new OpenApiSecurityRequirement
-    {
-        {
-            new OpenApiSecurityScheme
-            {
-                Reference = new OpenApiReference
-                {
-                    Type = ReferenceType.SecurityScheme,
-                    Id = "Bearer"
-                }
-            },
-            Array.Empty<string>()
-        }
-    });
-        });
-
-
         var app = builder.Build();
 
-        // https://stackoverflow.com/questions/69961449/net6-and-datetime-problem-cannot-write-datetime-with-kind-utc-to-postgresql-ty
+        // Fix for PostgreSQL timestamp behavior
         AppContext.SetSwitch("Npgsql.EnableLegacyTimestampBehavior", true);
 
-        #region -- Swagger and CORS --
-        // Configure the HTTP request pipeline.
+
+        // Configure the HTTP request pipeline
         if (app.Environment.IsDevelopment() || st.SwaggerEnabled)
         {
             app.UseSwagger();
@@ -127,16 +61,17 @@ public class Program
             app.UseDeveloperExceptionPage();
         }
 
-        // Use CORS
+        // CORS setup
         var origins = st.Origins == null ? [] : st.Origins.Split(';');
         if (origins.Length > 0)
         {
             app.UseCors(p => p.AllowAnyHeader().AllowAnyMethod().WithOrigins(origins).AllowCredentials());
         }
-        #endregion
 
+        // Enable Hangfire Dashboard
         app.UseHangfireDashboard();
 
+        // Schedule the recurring job
         RecurringJob.AddOrUpdate<IGameService>(
                 recurringJobId: "UpdateGameStatusJob",
                 methodCall: service => service.UpdateGameStatusAsync(),
@@ -147,26 +82,8 @@ public class Program
                 }
         );
 
-
-        app.UseHttpsRedirection();
-        app.UseAuthentication();
-        app.UseAuthorization();
-
-        app.MapControllers();
-        app.MapHealthChecks("/health");
-        app.UseResponseCaching();
-
         app.Run();
     }
 
-    #endregion
-
-    #region -- Fields --
-
-    /// <summary>
-    /// Variable prefix
-    /// </summary>
     private static string _prefix = "Job";
-
-    #endregion
 }
