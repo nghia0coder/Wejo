@@ -29,9 +29,11 @@ pipeline {
                     env.UPDATE_COMMON = changedFiles.any { it.startsWith("Wejo/Wejo.Common") } ? "true" : "false"
                     env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.Game.API/") || it.startsWith("Wejo/Wejo.Game.Application/") } ? "true" : "false"
                     env.UPDATE_IDENTITY = changedFiles.any { it.startsWith("Wejo/Wejo.Identity.API/") || it.startsWith("Wejo/Wejo.Identity.Application/") } ? "true" : "false"
-
+                    env.UPDATE_JOB = changedFiles.any { it.startsWith("Wejo/Wejo.Backgroud.Job/") ? "true" : "false"
+                    
                     echo "Update Game Service: ${env.UPDATE_GAME}"
                     echo "Update Identity Service: ${env.UPDATE_IDENTITY}"
+                    echo "Update Job Service: ${env.UPDATE_Job}"
                     echo "Update Common Modules: ${env.UPDATE_COMMON}"
                 }
             }
@@ -65,6 +67,14 @@ pipeline {
                                     cd ${WORKSPACE}/Wejo
                                     docker-compose build identity-service
                                     docker push ${DOCKER_IMAGE_IDENTITY}
+                                """
+                            }
+                            if (env.UPDATE_JOB == "true") {
+                                echo "Building and pushing Job Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build job-service
+                                    docker push ${DOCKER_IMAGE_JOB}
                                 """
                             }
                         }
@@ -106,6 +116,16 @@ pipeline {
                                 docker-compose rm -f identity-service
                                 docker pull ${DOCKER_IMAGE_IDENTITY}
                                 docker-compose up -d --force-recreate identity-service
+                            """
+                        }
+                        if (env.UPDATE_JOB == "true") {
+                            echo "Deploying updated JOB Service..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop JOB-service
+                                docker-compose rm -f JOB-service
+                                docker pull ${DOCKER_IMAGE_JOB}
+                                docker-compose up -d --force-recreate JOB-service
                             """
                         }
                     }
