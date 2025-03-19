@@ -2,6 +2,7 @@
 
 namespace Wejo.Common.Domain.Database;
 
+using Wejo.Common.Core.Enums;
 using Wejo.Common.Domain.Entities;
 using Wejo.Common.Domain.Interfaces;
 
@@ -54,9 +55,17 @@ public partial class WejoContext : DbContext, IWejoContext
             entity.Property(e => e.CostShared).HasDefaultValue(false);
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
-                .HasColumnType("timestamp without time zone");
+                .HasColumnType("timestamp(0) without time zone");
+            entity.Property(e => e.EndTime).HasColumnType("timestamp without time zone");
             entity.Property(e => e.GameAccess).HasDefaultValue(true);
             entity.Property(e => e.GameSkill).HasDefaultValue(false);
+            entity.Property(e => e.Location).HasColumnType("geometry(Point,4326)");
+            entity.Property(e => e.StartTime).HasColumnType("timestamp without time zone");
+
+            // ✅ Corrected Enum Storage: Convert Enum to Integer
+            entity.Property(e => e.Status)
+                .HasDefaultValue(GameStatus.Waiting) // Set default as Enum, not int
+                .HasConversion<int>(); // Convert Enum to Integer
 
             entity.HasOne(d => d.GameType).WithMany(p => p.Games)
                 .HasForeignKey(d => d.GameTypeId)
@@ -74,6 +83,7 @@ public partial class WejoContext : DbContext, IWejoContext
                 .HasForeignKey(d => d.VenueId)
                 .HasConstraintName("Game_VenueId_fkey");
         });
+
 
         modelBuilder.Entity<GameParticipant>(entity =>
         {

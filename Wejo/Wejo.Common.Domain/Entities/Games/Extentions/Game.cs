@@ -16,27 +16,6 @@ partial class Game
     }
 
 
-    /// <summary>
-    /// Create
-    /// </summary>
-    /// <param name="sportId"></param>
-    /// <param name="createdBy"></param>
-    /// <param name="sportFormatId"></param>
-    /// <param name="venueId"></param>
-    /// <param name="gameTypeId"></param>
-    /// <param name="area"></param>
-    /// <param name="date"></param>
-    /// <param name="startTime"></param>
-    /// <param name="endTime"></param>
-    /// <param name="gameAccess"></param>
-    /// <param name="bringEquipment"></param>
-    /// <param name="costShared"></param>
-    /// <param name="gameSkill"></param>
-    /// <param name="skillStart"></param>
-    /// <param name="skillEnd"></param>
-    /// <param name="totalPlayer"></param>
-    /// <param name="status"></param>
-    /// <param name="description"></param>
     public static Game Create(
         int sportId,
         string createdBy,
@@ -55,7 +34,8 @@ partial class Game
         int? skillEnd,
         int? totalPlayer,
         GameStatus status,
-        string? description)
+        string? description,
+        NetTopologySuite.Geometries.Point location)
     {
 
         var res = new Game
@@ -78,7 +58,8 @@ partial class Game
             SkillEnd = skillEnd,
             TotalPlayer = totalPlayer,
             Status = status,
-            Description = description
+            Description = description,
+            Location = location
         };
 
         return res;
@@ -136,84 +117,23 @@ partial class Game
     {
         #region -- Properties --
 
-        /// <summary>
-        /// SportId
-        /// </summary>
         public int? SportId { get; set; }
 
-        /// <summary>
-        /// CreatedBy
-        /// </summary>
         public string CreatedBy { get; set; } = null!;
 
-        /// <summary>
-        /// SportFormatId
-        /// </summary>
         public int? SportFormatId { get; set; }
-
-        /// <summary>
-        /// VenueId
-        /// </summary>
         public Guid? VenueId { get; set; }
-
-        /// <summary>
-        /// GameTypeId
-        /// </summary>
         public int? GameTypeId { get; set; }
-
-        /// <summary>
-        /// Area
-        /// </summary>
         public string Area { get; set; } = null!;
-
-        /// <summary>
-        /// Date
-        /// </summary>
         public DateOnly Date { get; set; }
-
-        /// <summary>
-        /// StartTime
-        /// </summary>
         public DateTime StartTime { get; set; }
-
-        /// <summary>
-        /// EndTime
-        /// </summary>
         public DateTime EndTime { get; set; }
-
-        /// <summary>
-        /// GameAccess
-        /// </summary>
         public bool GameAccess { get; set; }
-
-        /// <summary>
-        /// BringEquipment
-        /// </summary>
         public bool BringEquipment { get; set; }
-
-        /// <summary>
-        /// CostShared
-        /// </summary>
         public bool CostShared { get; set; }
-
-        /// <summary>
-        /// GameSkill
-        /// </summary>
         public bool GameSkill { get; set; }
-
-        /// <summary>
-        /// SkillStart
-        /// </summary>
         public int? SkillStart { get; set; }
-
-        /// <summary>
-        /// SkillEnd
-        /// </summary>
         public int? SkillEnd { get; set; }
-
-        /// <summary>
-        /// TotalPlayer
-        /// </summary>
         public int? TotalPlayer { get; set; }
 
         /// <summary>

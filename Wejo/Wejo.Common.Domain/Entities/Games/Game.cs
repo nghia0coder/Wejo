@@ -1,4 +1,5 @@
-﻿using Wejo.Common.Core.Enums;
+﻿using NetTopologySuite.Geometries;
+using Wejo.Common.Core.Enums;
 
 namespace Wejo.Common.Domain.Entities;
 
@@ -44,9 +45,7 @@ public partial class Game
 
     public string? Description { get; set; }
 
-    public double? Longitude { get; set; }
-
-    public double? Latitude { get; set; }
+    public Point? Location { get; set; }
 
     public virtual ICollection<GameParticipant> GameParticipants { get; set; } = new List<GameParticipant>();
 

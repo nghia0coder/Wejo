@@ -6,6 +6,7 @@ using Common.Core.Enums;
 using Common.Domain.Entities;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Responses;
+using NetTopologySuite.Geometries;
 using Request;
 
 public class GameCreateH : BaseH, IRequestHandler<GameCreateR, SingleResponse>
@@ -15,6 +16,8 @@ public class GameCreateH : BaseH, IRequestHandler<GameCreateR, SingleResponse>
     public async Task<SingleResponse> Handle(GameCreateR request, CancellationToken cancellationToken)
     {
         var res = new SingleResponse();
+
+        var location = new Point(request.Longitude, request.Latitude) { SRID = 4326 };
 
         var ett = Game.Create(
             request.SportId,
@@ -33,8 +36,9 @@ public class GameCreateH : BaseH, IRequestHandler<GameCreateR, SingleResponse>
             request.SkillStart,
             request.SkillEnd,
             request.TotalPlayer,
-            request.Status,
-            request.Description
+            GameStatus.Waiting,
+            request.Description,
+            location
         );
 
         await _context.Games.AddAsync(ett, cancellationToken);

@@ -48,6 +48,10 @@ public class Program
         // Update connection string
         var csDb = cs.SetDbParams(st.Db);
 
+        builder.Services.AddDbContext<WejoContext>(options =>
+          options.UseNpgsql(csDb, o => o.UseNetTopologySuite())
+      );
+
         #region -- Setup DI --
         // Setting
         builder.Services.AddSingleton<ISetting>(st!);
