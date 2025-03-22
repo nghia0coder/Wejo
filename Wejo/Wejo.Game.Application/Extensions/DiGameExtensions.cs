@@ -6,6 +6,8 @@ namespace Wejo.Game.Application.Extensions;
 using Commands;
 using Common.SeedWork.Responses;
 using Request;
+using Wejo.Game.Application.Queries.GameSearch;
+using Wejo.Game.Application.Request.Games;
 
 /// <summary>
 /// DI extension
@@ -33,6 +35,7 @@ public static class DiGameExtensions
     public static void AddGameCommands(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
         p.AddBehavior<IRequestHandler<GameCreateR, SingleResponse>, GameCreateH>(life);
+        p.AddBehavior<IRequestHandler<GameListInfoR, SingleResponse>, GameListInfoH>(life);
     }
 
     /// <summary>
