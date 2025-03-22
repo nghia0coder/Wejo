@@ -19,8 +19,6 @@ public partial class Game
 
     public string Area { get; set; } = null!;
 
-    public DateOnly Date { get; set; }
-
     public DateTime StartTime { get; set; }
 
     public DateTime EndTime { get; set; }
