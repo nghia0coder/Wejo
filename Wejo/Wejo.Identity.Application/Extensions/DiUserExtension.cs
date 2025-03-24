@@ -47,6 +47,7 @@ public static class DiUserExtension
     /// <param name="life">ServiceLifetime</param>
     public static void AddUserQueries(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
+        p.AddBehavior<IRequestHandler<UserPlaypalViewR, SingleResponse>, UserPlaypalViewH>(life);
         p.AddBehavior<IRequestHandler<UserViewR, SingleResponse>, UserViewH>(life);
         p.AddBehavior<IRequestHandler<UserCheckExistR, SingleResponse>, UserCheckExistH>(life);
     }
