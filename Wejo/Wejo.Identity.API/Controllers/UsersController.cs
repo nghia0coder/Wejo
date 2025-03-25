@@ -38,7 +38,7 @@ public class UsersController : BaseController
     /// <returns>Return the result</returns>
     [HttpPost("Create")]
     [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
-    public async Task<IActionResult> Create([FromBody] UserCreateR request)
+    public async Task<IActionResult> Create([FromForm] UserCreateR request)
     {
         request.Analyze(HttpContext);
 

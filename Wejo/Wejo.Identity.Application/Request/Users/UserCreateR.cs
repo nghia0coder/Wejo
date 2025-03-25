@@ -1,4 +1,6 @@
-﻿namespace Wejo.Identity.Application.Requests;
+﻿using Microsoft.AspNetCore.Http;
+
+namespace Wejo.Identity.Application.Requests;
 
 using Common.Core.Requests;
 
@@ -41,4 +43,14 @@ public class UserCreateR : BaseR
     /// EmailConfirmed
     /// </summary>
     public bool EmailConfirmed { get; set; }
+
+    /// <summary>
+    /// Image Url
+    /// </summary>
+    public string? ImageUrl { get; set; }
+
+    /// <summary>
+    /// Image
+    /// </summary>
+    public IFormFile? Image { get; set; }
 }
