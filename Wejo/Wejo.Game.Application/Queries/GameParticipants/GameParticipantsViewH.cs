@@ -40,8 +40,6 @@ public class GameParticipantViewH : BaseH, IRequestHandler<GameParticipantViewR,
     {
         var res = new SearchResponse(request.PageNum, request.PageSize, request.Paging);
 
-        var q = _context.GameParticipants.AsNoTracking();
-
         #region -- Validate on client --
         var vr = new GameParticipantViewV().Validate(request);
         if (!vr.IsValid)
@@ -65,6 +63,8 @@ public class GameParticipantViewH : BaseH, IRequestHandler<GameParticipantViewR,
             return res.SetError(nameof(E002), E002, t);
         }
         #endregion
+
+        var q = _context.GameParticipants.Include(p => p.User).Include(p => p.Game).AsNoTracking();
 
         #region -- Filter --
         string? keyword = null;

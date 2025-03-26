@@ -55,6 +55,7 @@ partial class GameParticipant
         res.UserName = User?.FirstName + User?.LastName;
         res.Level = User?.Level.ToString();
         res.CreatedOn = CreatedOn;
+        res.IsHost = Game?.CreatedBy == UserId;
 
         return res;
     }
@@ -146,6 +147,11 @@ partial class GameParticipant
         /// DateTime
         /// </summary>
         public DateTime? CreatedOn { get; set; }
+
+        /// <summary>
+        /// IsHost
+        /// </summary>
+        public bool? IsHost { get; set; }
     }
 
     /// <summary>
