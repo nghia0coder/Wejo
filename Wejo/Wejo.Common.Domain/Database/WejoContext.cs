@@ -25,6 +25,10 @@ public partial class WejoContext : DbContext, IWejoContext
 
     public virtual DbSet<Message> Messages { get; set; }
 
+    public virtual DbSet<Notification> Notifications { get; set; }
+
+    public virtual DbSet<NotificationSetting> Notificationsettings { get; set; }
+
     public virtual DbSet<ParticipantHistory> ParticipantHistories { get; set; }
 
     public virtual DbSet<Sport> Sports { get; set; }
@@ -133,6 +137,50 @@ public partial class WejoContext : DbContext, IWejoContext
                 .HasForeignKey(d => d.ParentId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("Message_ParentId_fkey");
+        });
+
+        modelBuilder.Entity<Notification>(entity =>
+        {
+            entity.ToTable(tb => tb.HasComment("Stores user notifications"));
+
+            entity.HasIndex(e => e.CreatedOn, "IX_Notifications_CreatedOn").IsDescending();
+
+            entity.HasIndex(e => e.UserId, "IX_Notifications_UserId");
+
+            entity.Property(e => e.Id)
+                .ValueGeneratedNever()
+                .HasComment("Unique identifier for the notification");
+            entity.Property(e => e.CreatedOn).HasComment("Timestamp when the notification was created");
+            entity.Property(e => e.IsRead)
+                .HasDefaultValue(false)
+                .HasComment("Indicates if the notification has been read");
+            entity.Property(e => e.Message).HasComment("Detailed message content");
+            entity.Property(e => e.RelatedEntityId).HasComment("Optional ID of related entity (e.g., GameId)");
+            entity.Property(e => e.Title)
+                .HasMaxLength(255)
+                .HasComment("Short title of the notification");
+            entity.Property(e => e.Type).HasComment("Notification type (enum: 1=GameStarted, 2=GameEnded, 3=PlaypalAdded, etc.)");
+            entity.Property(e => e.UserId)
+                .HasMaxLength(255)
+                .HasComment("Recipient user ID");
+        });
+
+
+        modelBuilder.Entity<NotificationSetting>(entity =>
+        {
+            entity.HasKey(e => new { e.UserId, e.NotificationType }).HasName("PK_NotificationSettings");
+
+            entity.ToTable("notificationsettings", "notification", tb => tb.HasComment("Stores user preferences for notification types"));
+
+            entity.HasIndex(e => e.UserId, "IX_NotificationSettings_UserId");
+
+            entity.Property(e => e.UserId)
+                .HasMaxLength(255)
+                .HasComment("User ID");
+            entity.Property(e => e.NotificationType).HasComment("Type of notification (enum)");
+            entity.Property(e => e.IsEnabled)
+                .HasDefaultValue(true)
+                .HasComment("Whether this notification type is enabled for the user");
         });
 
         modelBuilder.Entity<ParticipantHistory>(entity =>

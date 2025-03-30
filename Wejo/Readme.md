@@ -12,7 +12,7 @@
 
 # Scaffold Database
 
-dotnet ef dbcontext scaffold "Host={Host};Database={DbName};Username={UserName};Password={Password}" Npgsql.EntityFrameworkCore.PostgreSQL -o Database -c WejoContext --project .\Wejo.Common.Domain -o Database -c WejoContext --force
+dotnet ef dbcontext scaffold "Host={Host};Database={DbName};Username={UserName};Password={Password}" Npgsql.EntityFrameworkCore.PostgreSQL -o Database -c WejoContext --project .\Wejo.Common.Domain --force
 
 # Notice : 
 

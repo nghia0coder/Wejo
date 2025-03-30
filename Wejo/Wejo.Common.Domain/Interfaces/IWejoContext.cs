@@ -51,6 +51,10 @@ public interface IWejoContext
 
     DbSet<Message> Messages { get; set; }
 
+    DbSet<Notification> Notifications { get; set; }
+
+    DbSet<NotificationSetting> Notificationsettings { get; set; }
+
     DbSet<ParticipantHistory> ParticipantHistories { get; set; }
 
     DbSet<Sport> Sports { get; set; }
