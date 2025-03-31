@@ -10,9 +10,8 @@ public class GameCreateR : BaseR
     public Guid? VenueId { get; set; }
     public int? GameTypeId { get; set; }
     public string Area { get; set; } = null!;
-    public DateOnly Date { get; set; }
-    public TimeOnly StartTime { get; set; }
-    public TimeOnly EndTime { get; set; }
+    public DateTime StartTime { get; set; }
+    public DateTime EndTime { get; set; }
     public bool GameAccess { get; set; }
     public bool BringEquipment { get; set; }
     public bool CostShared { get; set; }

@@ -26,7 +26,6 @@ public class GameCreateH : BaseH, IRequestHandler<GameCreateR, SingleResponse>
             request.VenueId,
             request.GameTypeId,
             request.Area,
-            request.Date,
             request.StartTime,
             request.EndTime,
             request.GameAccess,

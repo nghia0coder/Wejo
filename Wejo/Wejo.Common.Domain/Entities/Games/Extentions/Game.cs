@@ -23,9 +23,8 @@ partial class Game
         Guid? venueId,
         int? gameTypeId,
         string area,
-        DateOnly date,
-        TimeOnly startTime,
-        TimeOnly endTime,
+        DateTime startTime,
+        DateTime endTime,
         bool gameAccess,
         bool bringEquipment,
         bool costShared,
@@ -47,8 +46,8 @@ partial class Game
             VenueId = venueId,
             GameTypeId = gameTypeId,
             Area = area,
-            StartTime = date.ToDateTime(startTime),
-            EndTime = date.ToDateTime(endTime),
+            StartTime = startTime,
+            EndTime = endTime,
             GameAccess = gameAccess,
             BringEquipment = bringEquipment,
             CostShared = costShared,
@@ -134,7 +133,7 @@ partial class Game
 
     public class SearchDto : BaseDto
     {
-        public string PlayerAvatarJson { get; set; }
+        public string? PlayerAvatarJson { get; set; }
 
         //public List<string> PlayerAvatar =>
         //    string.IsNullOrWhiteSpace(PlayerAvatarJson) ? new List<string>() :
