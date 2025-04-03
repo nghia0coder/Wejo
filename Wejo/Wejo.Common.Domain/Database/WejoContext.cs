@@ -141,7 +141,7 @@ public partial class WejoContext : DbContext, IWejoContext
 
         modelBuilder.Entity<Notification>(entity =>
         {
-            entity.ToTable(tb => tb.HasComment("Stores user notifications"));
+            entity.ToTable("notifications", "notification");
 
             entity.HasIndex(e => e.CreatedOn, "IX_Notifications_CreatedOn").IsDescending();
 

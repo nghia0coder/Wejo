@@ -1,9 +1,12 @@
 ﻿namespace Wejo.Common.Domain.Entities;
 
+using Common.SeedWork;
+using Core.Enums;
+
 /// <summary>
 /// Stores user notifications
 /// </summary>
-public partial class Notification
+public partial class Notification : EntityId
 {
     /// <summary>
     /// Unique identifier for the notification
@@ -18,7 +21,7 @@ public partial class Notification
     /// <summary>
     /// Notification type (enum: 1=GameStarted, 2=GameEnded, 3=PlaypalAdded, etc.)
     /// </summary>
-    public int Type { get; set; }
+    public NotificationType Type { get; set; }
 
     /// <summary>
     /// Short title of the notification

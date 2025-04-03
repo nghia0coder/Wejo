@@ -3,7 +3,9 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Wejo.Game.Application.Commands;
 
+using Common.Core.Enums;
 using Common.Core.Extensions;
+using Common.Core.Protos;
 using Common.Domain.Entities;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Dtos;
@@ -11,7 +13,6 @@ using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
 using Request;
 using Validators;
-using Wejo.Common.Core.Enums;
 using static Common.SeedWork.Constants.Error;
 
 /// <summary>
@@ -25,8 +26,9 @@ public class GameParticipantCreateH : BaseH, IRequestHandler<GameParticipantCrea
     /// Initialize
     /// </summary>
     /// <param name="context">DB context</param>
-    public GameParticipantCreateH(IWejoContext context) : base(context)
+    public GameParticipantCreateH(IWejoContext context, GameParticipantService.GameParticipantServiceClient grpcClient) : base(context)
     {
+        _grpcClient = grpcClient;
     }
 
     /// <summary>
@@ -74,10 +76,31 @@ public class GameParticipantCreateH : BaseH, IRequestHandler<GameParticipantCrea
         var ett = GameParticipant.Create(gameId, userId, PlayerStatus.Pending);
 
         await _context.GameParticipants.AddAsync(ett, cancellationToken);
+
+        #region Send gRPC
+        var hosId = await _context.Games.Where(g => g.Id == gameId).Select(g => g.CreatedBy).FirstOrDefaultAsync(cancellationToken);
+        var grpcRequest = new GameJoinRequest
+        {
+            HostId = hosId,
+            RequesterId = userId,
+            GameId = gameId.ToString()
+        };
+        await _grpcClient.SendGameJoinRequestAsync(grpcRequest);
+        #endregion
+
         await _context.SaveChangesAsync(default);
 
         return res.SetSuccess(ett.ToViewDto());
     }
+
+    #endregion
+
+    #region -- Fields --
+
+    /// <summary>
+    /// gRPC Client
+    /// </summary>
+    private readonly GameParticipantService.GameParticipantServiceClient _grpcClient;
 
     #endregion
 }

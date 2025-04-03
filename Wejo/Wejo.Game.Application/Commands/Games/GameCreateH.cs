@@ -1,4 +1,5 @@
 ﻿using MediatR;
+using NetTopologySuite.Geometries;
 
 namespace Wejo.Game.Application.Commands;
 
@@ -6,7 +7,6 @@ using Common.Core.Enums;
 using Common.Domain.Entities;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Responses;
-using NetTopologySuite.Geometries;
 using Request;
 
 public class GameCreateH : BaseH, IRequestHandler<GameCreateR, SingleResponse>

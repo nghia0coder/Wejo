@@ -5,11 +5,7 @@
 		<Nullable>enable</Nullable>
 		<ImplicitUsings>enable</ImplicitUsings>
 	</PropertyGroup>
-
 	<ItemGroup>
-		<PackageReference Include="Azure.Storage.Blobs" Version="12.23.0" />
-		<PackageReference Include="Grpc.Net.Client" Version="2.70.0" />
-		<PackageReference Include="Grpc.Net.ClientFactory" Version="2.70.0" />
 		<PackageReference Include="Grpc.Tools" Version="2.71.0">
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
@@ -24,15 +20,29 @@
 			<PrivateAssets>all</PrivateAssets>
 			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
 		</PackageReference>
+		<PackageReference Include="Microsoft.VisualStudio.Azure.Containers.Tools.Targets" Version="1.21.0" />
 		<PackageReference Include="Microsoft.VisualStudio.Web.CodeGeneration.Design" Version="8.0.7" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="8.0.11" />
 		<PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL.NetTopologySuite" Version="8.0.11" />
 		<PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
 	</ItemGroup>
 
+
 	<ItemGroup>
+		<PackageReference Include="Grpc.AspNetCore.Server" Version="2.70.0" />
+		<PackageReference Include="Microsoft.AspNetCore.SignalR.Core" Version="1.2.0" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<ProjectReference Include="..\Wejo.Common.Core\Wejo.Common.Core.csproj" />
 		<ProjectReference Include="..\Wejo.Common.Domain\Wejo.Common.Domain.csproj" />
-		<ProjectReference Include="..\Wejo.Game.Application\Wejo.Game.Application.csproj" />
+		<Protobuf Include="..\Wejo.Common.Core\Protos\GameParticipants\game_participant.proto" GrpcServices="Server" Link="Protos\game_participant.proto" />
+	</ItemGroup>
+
+
+	<ItemGroup>
+		<Folder Include="Requests\GameParticipants\" />
 	</ItemGroup>
 
 </Project>

@@ -1,15 +1,14 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
+using Microsoft.OpenApi.Models;
 
-namespace Wejo.Game.API;
+namespace Wejo.Realtime.API;
 
-using Application;
-using Application.Extensions;
-using Application.Interfaces;
 using Common.Core.Extensions;
-using Common.Core.Protos;
 using Common.Domain.Database;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Extensions;
+using Hubs;
+using Services;
 using static Common.SeedWork.Constants.Setting;
 
 /// <summary>
@@ -28,6 +27,7 @@ public class Program
         var builder = WebApplication.CreateBuilder(args);
         builder.Services.AddHealthChecks();
 
+        #region -- Load configuration environment --
         // Load configuration environment
         var environment = builder.Environment.EnvironmentName;
         builder.Configuration
@@ -48,43 +48,37 @@ public class Program
 
         // Update connection string
         var csDb = cs.SetDbParams(st.Db);
-
         builder.Services.AddDbContext<WejoContext>(options =>
           options.UseNpgsql(csDb, o => o.UseNetTopologySuite())
         );
+        #endregion
+
+        #region -- Load Http Protocols --
+        builder.WebHost.ConfigureKestrel(options =>
+        {
+            options.ListenLocalhost(5001, listenOptions =>
+            {
+                listenOptions.UseHttps("localhost.pfx", "wejo2025");
+                listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+            });
+        });
+        #endregion
 
         #region -- Setup DI --
         // Setting
         builder.Services.AddSingleton<ISetting>(st!);
 
-        builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
-
         // DbContext
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
         builder.Services.AddScoped<IWejoContext>(p => p.GetService<WejoContext>()!);
 
-        // MediatR
-        builder.Services.AddMediatR(p =>
-        {
-            p.RegisterServicesFromAssembly(me.Assembly);
+        // SignalR
+        builder.Services.AddSignalR();
 
-            p.AddDiGame();
-            p.AddDiGameParticipant();
-        });
+        // gRPC
+        builder.Services.AddGrpc();
+
         #endregion
-
-        // gRPC Client
-        builder.Services.AddGrpcClient<GameParticipantService.GameParticipantServiceClient>(o =>
-        {
-            o.Address = new Uri("https://localhost:5001");
-        }).ConfigureChannel(o =>
-        {
-            o.HttpHandler = new SocketsHttpHandler
-            {
-                EnableMultipleHttp2Connections = true,
-                KeepAlivePingDelay = TimeSpan.FromSeconds(30)
-            };
-        });
 
         #region -- Setup token --
         var firebaseProjectId = builder.Configuration["Firebase:ProjectId"];
@@ -95,11 +89,43 @@ public class Program
         builder.Services.ConfigureApplicationCookie(p => { p.Cookie.Name = _prefix; });
         #endregion
 
-        builder.Services.AddControllers();
-
+        #region -- Swagger and CORS --
         // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
         builder.Services.AddEndpointsApiExplorer();
         builder.Services.AddSwaggerGen(p => { p.EnableAnnotations(); });
+
+        builder.Services.AddSwaggerGen(options =>
+        {
+            options.EnableAnnotations();
+
+            options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+            {
+                Name = "Authorization",
+                Description = "Enter JWT Bearer token **_only_**",
+                In = ParameterLocation.Header,
+                Type = SecuritySchemeType.Http,
+                Scheme = "bearer",
+                BearerFormat = "JWT"
+            });
+
+            options.AddSecurityRequirement(new OpenApiSecurityRequirement
+            {
+                {
+                    new OpenApiSecurityScheme
+                    {
+                        Reference = new OpenApiReference
+                        {
+                            Type = ReferenceType.SecurityScheme,
+                            Id = "Bearer"
+                        }
+                    },
+                    Array.Empty<string>()
+                }
+            });
+        });
+        #endregion
+
+        builder.Services.AddControllers();
 
         var app = builder.Build();
 
@@ -133,9 +159,10 @@ public class Program
         app.MapControllers();
         app.MapHealthChecks("/health");
         app.UseResponseCaching();
+        app.MapGrpcService<GameParticipantServiceImpl>();
+        app.MapHub<NotificationHub>("/notificationHub");
 
-        // Explicitly set the API to listen on port 8081
-        app.Run("http://0.0.0.0:8081");
+        app.Run("http://0.0.0.0:8083");
     }
 
     #endregion
@@ -146,11 +173,6 @@ public class Program
     /// Variable prefix
     /// </summary>
     private static string _prefix = "Ide";
-
-    /// <summary>
-    /// Media extension allow
-    /// </summary>
-    public static string _mediaExtensionAllow = default!;
 
     #endregion
 }
