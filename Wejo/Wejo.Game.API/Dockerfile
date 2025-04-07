@@ -33,4 +33,6 @@ COPY --from=publish /app/publish .
 
 COPY Wejo.Game.API/appsettings.json /app/appsettings.json
 
+ENV GrpcClient__NotificationService=https://wejo_realtime_service:5001
+
 ENTRYPOINT ["dotnet", "Wejo.Game.API.dll"]

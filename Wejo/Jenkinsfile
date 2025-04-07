@@ -6,6 +6,8 @@ pipeline {
         DOCKER_IMAGE_GAME = "lemichael52/wejo_game_service"
         DOCKER_IMAGE_IDENTITY = "lemichael52/wejo_identity_service"
         DOCKER_IMAGE_JOB = "lemichael52/wejo_job_service"
+        DOCKER_IMAGE_REALTIME = "lemichael52/wejo_realtime_service"
+        // TODO
         BRANCH_NAME = "dev"
     }
     
@@ -31,14 +33,19 @@ pipeline {
                     env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.Game.API/") || it.startsWith("Wejo/Wejo.Game.Application/") } ? "true" : "false"
                     env.UPDATE_IDENTITY = changedFiles.any { it.startsWith("Wejo/Wejo.Identity.API/") || it.startsWith("Wejo/Wejo.Identity.Application/") } ? "true" : "false"
                     env.UPDATE_JOB = changedFiles.any { it.startsWith("Wejo/Wejo.Backgroud.Job/") } ? "true" : "false"
-                    
+                    env.UPDATE_REALTIME = changedFiles.any { it.startsWith("Wejo/Wejo.Realtime.API/") } ? "true" : "false"
+                    // TODO
+
                     echo "Update Game Service: ${env.UPDATE_GAME}"
                     echo "Update Identity Service: ${env.UPDATE_IDENTITY}"
                     echo "Update Job Service: ${env.UPDATE_JOB}"
+                    echo "Update Realtime Service: ${env.UPDATE_REALTIME}"
                     echo "Update Common Modules: ${env.UPDATE_COMMON}"
+                    // TODO
                 }
             }
         }
+        
 
         stage('Build & Push Updated Service') {
             steps {
@@ -52,6 +59,8 @@ pipeline {
                                 docker push ${DOCKER_IMAGE_GAME}
                                 docker push ${DOCKER_IMAGE_IDENTITY}
                                 docker push ${DOCKER_IMAGE_JOB}
+                                docker push ${DOCKER_IMAGE_REALTIME}
+                                // TODO
                             """
                         } else {
                             if (env.UPDATE_GAME == "true") {
@@ -78,6 +87,15 @@ pipeline {
                                     docker push ${DOCKER_IMAGE_JOB}
                                 """
                             }
+                            if (env.UPDATE_REALTIME == "true") {
+                                echo "Building and pushing Realtime Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build realtime-service
+                                    docker push ${DOCKER_IMAGE_REALTIME}
+                                """
+                            }
+                            // TODO
                         }
                     }
                 }
@@ -91,12 +109,14 @@ pipeline {
                         echo "Deploying updated system..."
                         sh """
                             cd ${WORKSPACE}/Wejo
-                            docker-compose stop game-service identity-service job-service
-                            docker-compose rm -f game-service identity-service job-service
+                            docker-compose stop game-service identity-service job-service realtime-service // TODO
+                            docker-compose rm -f game-service identity-service job-service realtime-service // TODO
                             docker pull ${DOCKER_IMAGE_GAME}
                             docker pull ${DOCKER_IMAGE_IDENTITY}
                             docker pull ${DOCKER_IMAGE_JOB}
-                            docker compose up -d --force-recreate game-service identity-service job-service
+                            docker pull ${DOCKER_IMAGE_REALTIME}
+                            // TODO
+                            docker compose up -d --force-recreate game-service identity-service job-service realtime-service // TODO
                         """
                     } else {
                         if (env.UPDATE_GAME == "true") {
@@ -129,6 +149,17 @@ pipeline {
                                 docker compose up -d --force-recreate job-service
                             """
                         }
+                        if (env.UPDATE_REALTIME == "true") {
+                            echo "Deploying updated Realtime Service..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop realtime-service
+                                docker-compose rm -f realtime-service
+                                docker pull ${DOCKER_IMAGE_REALTIME}
+                                docker compose up -d --force-recreate realtime-service
+                            """
+                        }
+                        // TODO
                     }
                 }
             }

@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore;
+﻿using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi.Models;
 
 namespace Wejo.Realtime.API;
@@ -28,7 +28,6 @@ public class Program
         builder.Services.AddHealthChecks();
 
         #region -- Load configuration environment --
-        // Load configuration environment
         var environment = builder.Environment.EnvironmentName;
         builder.Configuration
             .AddJsonFile("appsettings.json", optional: false, reloadOnChange: true)
@@ -56,10 +55,14 @@ public class Program
         #region -- Load Http Protocols --
         builder.WebHost.ConfigureKestrel(options =>
         {
-            options.ListenLocalhost(5001, listenOptions =>
+            options.ListenAnyIP(8083, listenOptions =>
             {
-                listenOptions.UseHttps("localhost.pfx", "wejo2025");
-                listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1AndHttp2;
+                listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http1;
+            });
+            options.ListenAnyIP(5001, listenOptions =>
+            {
+                listenOptions.Protocols = Microsoft.AspNetCore.Server.Kestrel.Core.HttpProtocols.Http2;
+                Console.WriteLine("Debug: Kestrel configured HTTP/2 cleartext on 5001 for gRPC");
             });
         });
         #endregion
@@ -152,7 +155,6 @@ public class Program
         }
         #endregion
 
-        app.UseHttpsRedirection();
         app.UseAuthentication();
         app.UseAuthorization();
 
@@ -162,7 +164,7 @@ public class Program
         app.MapGrpcService<GameParticipantServiceImpl>();
         app.MapHub<NotificationHub>("/notificationHub");
 
-        app.Run("http://0.0.0.0:8083");
+        app.Run();
     }
 
     #endregion

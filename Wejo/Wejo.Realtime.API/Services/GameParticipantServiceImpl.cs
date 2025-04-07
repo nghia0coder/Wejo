@@ -4,13 +4,13 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Wejo.Realtime.API.Services;
 
+using Common.Core.Constants;
 using Common.Core.Enums;
 using Common.Core.Extentions;
 using Common.Core.Protos;
 using Common.Domain.Entities;
 using Common.Domain.Interfaces;
 using Hubs;
-using Wejo.Common.Core.Constants;
 using static Common.Core.Protos.GameParticipantService;
 
 public class GameParticipantServiceImpl : GameParticipantServiceBase, IBaseService

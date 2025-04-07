@@ -19,3 +19,6 @@ dotnet ef dbcontext scaffold "Host={Host};Database={DbName};Username={UserName};
 - When scaffold succced its have message like this : Could not load database collations. 
 - > Just ignore its not affect anything
 - Then, update IWejoContext manual if there is any new dbset. Make sure all done then build all project again
+
+# Example build image:
+- docker build -t wejo_realtime_service -f Wejo.Realtime.API/Dockerfile . 

@@ -1,9 +1,12 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.SignalR;
 
 namespace Wejo.Realtime.API.Hubs;
 
 using Common.Core.Requests;
 
+
+[Authorize]
 public sealed class NotificationHub : Hub
 {
     #region -- Overrides --

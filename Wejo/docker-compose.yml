@@ -1,6 +1,28 @@
-version: '3.8'
+﻿version: '3.8'
 
 services:
+  realtime-service:
+    image: lemichael52/wejo_realtime_service 
+    build:
+      context: .
+      dockerfile: Wejo.Realtime.API/Dockerfile
+      args:
+        ENVIRONMENT: Development
+    container_name: wejo_realtime_service
+    ports:
+      - "8083:8083"
+      - "5001:5001"
+    environment:
+      - Wejo_Com_Environment=local
+      - Wejo_Ide_Db_Host=34.142.173.238
+      - Wejo_Ide_Db_Port=5432
+      - Wejo_Ide_Db_Name=dev_wejo
+      - Wejo_Ide_Db_UserName=3boyteam
+      - Wejo_Ide_Db_Password=QwerPoiu@2025
+      - Wejo_Ide_SwaggerEnabled=TRUE
+      - Wejo_Ide_DevMode=TRUE
+      - ASPNETCORE_URLS=http://+:8083;http://+:5001
+      - ASPNETCORE_ENVIRONMENT=Development
   game-service:
     image: lemichael52/wejo_game_service 
     build:
@@ -10,7 +32,7 @@ services:
         ENVIRONMENT: Development
     container_name: wejo_game_service
     ports:
-      - "8081:8081"  # First argument mapping for game-service
+      - "8081:8081"
     environment:
       - Wejo_Com_Environment=local
       - Wejo_Ide_Db_Host=34.142.173.238
@@ -22,6 +44,9 @@ services:
       - Wejo_Ide_DevMode=TRUE
       - Wejo_Ide_Protocols="Http1_8081"
       - ASPNETCORE_ENVIRONMENT=Development
+      - GrpcClient__NotificationService=https://wejo_realtime_service:5001
+    depends_on:
+      - realtime-service
   identity-service:
     image: lemichael52/wejo_identity_service
     build:

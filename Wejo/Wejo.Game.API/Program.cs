@@ -76,7 +76,7 @@ public class Program
         // gRPC Client
         builder.Services.AddGrpcClient<GameParticipantService.GameParticipantServiceClient>(o =>
         {
-            o.Address = new Uri("https://localhost:5001");
+            o.Address = new Uri("http://wejo_realtime_service:5001");
         }).ConfigureChannel(o =>
         {
             o.HttpHandler = new SocketsHttpHandler
