@@ -62,10 +62,16 @@ partial class Game
 
         return res;
     }
-
     public ViewDto ToViewDto()
     {
         var res = ToBaseDto<ViewDto>();
+
+        return res;
+    }
+
+    public ViewHistoryDto ToViewHistoryDto()
+    {
+        var res = ToBaseDto<ViewHistoryDto>();
 
         return res;
     }
@@ -144,10 +150,19 @@ partial class Game
         public double Distance { get; set; }
     }
 
-    public class ViewDto : BaseDto
+    public class ViewHistoryDto : BaseDto
     {
+        public string? OwnerAvatar { get; set; }
+        public int CurrentPlayer { get; set; }
+
     }
 
+    public class ViewDto : BaseDto
+    {
+        public string? PlayerAvatar { get; set; }
+        public int CurrentPlayer { get; set; }
+
+    }
 
 
     #endregion

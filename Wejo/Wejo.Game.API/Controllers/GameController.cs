@@ -43,4 +43,17 @@ public class GameController : BaseController
 
         return Ok(response);
     }
+
+    [HttpGet("ViewHistory")]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.Created)]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.BadRequest)]
+    public async Task<IActionResult> ViewHistory([FromBody] GameHistoryR request)
+    {
+        request.Analyze(HttpContext);
+
+        var response = await _mediator.Send(request);
+        response.ReturnUrl = AbsoluteUri;
+
+        return Ok(response);
+    }
 }

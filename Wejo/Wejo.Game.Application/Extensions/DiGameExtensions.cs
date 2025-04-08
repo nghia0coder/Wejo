@@ -36,6 +36,7 @@ public static class DiGameExtensions
     {
         p.AddBehavior<IRequestHandler<GameCreateR, SingleResponse>, GameCreateH>(life);
         p.AddBehavior<IRequestHandler<GameListInfoR, SingleResponse>, GameListInfoH>(life);
+        p.AddBehavior<IRequestHandler<GameHistoryR, SingleResponse>, GameHistoryH>(life);
     }
 
     /// <summary>
