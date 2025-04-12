@@ -44,6 +44,11 @@ public partial class Notification : EntityId
     public bool IsRead { get; set; }
 
     /// <summary>
+    /// Indicates if the notification has been seen
+    /// </summary>
+    public bool IsSeen { get; set; }
+
+    /// <summary>
     /// Timestamp when the notification was created
     /// </summary>
     public DateTime CreatedOn { get; set; }

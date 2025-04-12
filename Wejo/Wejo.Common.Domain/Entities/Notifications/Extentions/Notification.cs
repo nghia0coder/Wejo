@@ -60,7 +60,12 @@ partial class Notification
     {
         return new T
         {
-
+            Id = Id,
+            Content = Message,
+            Type = Type.ToString(),
+            IsRead = IsRead,
+            IsSeen = IsSeen,
+            CreatedOn = CreatedOn,
         };
     }
 
@@ -73,7 +78,39 @@ partial class Notification
     /// </summary>
     public class BaseDto
     {
+        #region -- Properties --
 
+        /// <summary>
+        /// Id
+        /// </summary>
+        public Guid Id { get; set; }
+
+        /// <summary>
+        /// Notification content
+        /// </summary>
+        public string Content { get; set; } = null!;
+
+        /// <summary>
+        /// Notification type
+        /// </summary>
+        public string Type { get; set; } = null!;
+
+        /// <summary>
+        /// Is read ?
+        /// </summary>
+        public bool IsRead { get; set; }
+
+        /// <summary>
+        /// Is seen ?
+        /// </summary>
+        public bool IsSeen { get; set; }
+
+        /// <summary>
+        /// The time when the notification was created
+        /// </summary>
+        public DateTime CreatedOn { get; set; }
+
+        #endregion
     }
 
     /// <summary>
