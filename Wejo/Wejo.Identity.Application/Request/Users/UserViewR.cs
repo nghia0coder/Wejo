@@ -7,8 +7,4 @@ namespace Wejo.Identity.Application.Requests;
 /// </summary>
 public class UserViewR : BaseR
 {
-    /// <summary>
-    /// Id
-    /// </summary>
-    public string? Id { get; set; }
 }
