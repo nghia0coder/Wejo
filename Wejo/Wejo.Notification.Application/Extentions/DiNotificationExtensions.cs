@@ -3,6 +3,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 namespace Wejo.Notification.Application.Extensions;
 
+using Commands;
 using Common.SeedWork.Responses;
 using Queries;
 using Requests;
@@ -32,6 +33,7 @@ public static class DiNotificationExtensions
     /// <param name="life">ServiceLifetime</param>
     public static void AddNotificationCommands(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
+        p.AddBehavior<IRequestHandler<NotiMarkAllAsSeenR, SingleResponse>, NotiMarkAllAsSeenH>(life);
     }
 
     /// <summary>
@@ -42,7 +44,6 @@ public static class DiNotificationExtensions
     public static void AddNotificationQueries(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
         p.AddBehavior<IRequestHandler<NotificationViewR, SingleResponse>, NotificationViewH>(life);
-
     }
 
     #endregion

@@ -28,4 +28,21 @@ public class NotificationController : BaseController
 
         return Ok(response);
     }
+
+    /// <summary>
+    /// Mark all as seen in notificaiton.
+    /// </summary>
+    /// <param name="request">Request</param>
+    /// <returns>Ok</returns>
+    [HttpPatch("mark-all-as-seen")]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.Created)]
+    public async Task<IActionResult> MarkAllAsSeen([FromBody] NotiMarkAllAsSeenR request)
+    {
+        request.Analyze(HttpContext);
+
+        var response = await _mediator.Send(request);
+        response.ReturnUrl = AbsoluteUri;
+
+        return Ok(response);
+    }
 }

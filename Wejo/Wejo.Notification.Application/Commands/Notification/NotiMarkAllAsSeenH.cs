@@ -1,7 +1,7 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Wejo.Notification.Application.Queries;
+namespace Wejo.Notification.Application.Commands;
 
 using Common.Core.Enums;
 using Common.Core.Extensions;
@@ -15,7 +15,7 @@ using static Common.SeedWork.Constants.Error;
 /// <summary>
 /// Handler
 /// </summary>
-public class NotificationViewH : BaseH, IRequestHandler<NotificationViewR, SingleResponse>
+public class NotiMarkAllAsSeenH : BaseH, IRequestHandler<NotiMarkAllAsSeenR, SingleResponse>
 {
     #region -- Methods --
 
@@ -23,7 +23,7 @@ public class NotificationViewH : BaseH, IRequestHandler<NotificationViewR, Singl
     /// Initialize
     /// </summary>
     /// <param name="context">DB context</param>
-    public NotificationViewH(IWejoContext context) : base(context) { }
+    public NotiMarkAllAsSeenH(IWejoContext context) : base(context) { }
 
     /// <summary>
     /// Handle
@@ -31,11 +31,11 @@ public class NotificationViewH : BaseH, IRequestHandler<NotificationViewR, Singl
     /// <param name="request">Request</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Return the result</returns>
-    public async Task<SingleResponse> Handle(NotificationViewR request, CancellationToken cancellationToken)
+    public async Task<SingleResponse> Handle(NotiMarkAllAsSeenR request, CancellationToken cancellationToken)
     {
         var res = new SingleResponse();
 
-        var vr = new NotificationViewV().Validate(request);
+        var vr = new NotiMarkAllAsSeenV().Validate(request);
         if (!vr.IsValid)
         {
             var t = vr.Errors.ToDic();
@@ -60,20 +60,20 @@ public class NotificationViewH : BaseH, IRequestHandler<NotificationViewR, Singl
 
         query = query.Where(n => n.Type == type);
 
-        var notifications = await query
-            .OrderByDescending(user => user.CreatedOn)
-            .Select(user => user.ToViewDto())
-            .ToListAsync(cancellationToken);
+        var updatedCount = await query.CountAsync(cancellationToken);
+
+        await query.ExecuteUpdateAsync(setters => setters.SetProperty(n => n.IsSeen, true), cancellationToken);
 
         var unseenCount = await _context.Notifications
-                .Where(n => n.UserId == userId && !n.IsSeen)
-                .CountAsync(cancellationToken);
+            .Where(n => n.UserId == userId && !n.IsSeen)
+            .CountAsync(cancellationToken);
 
         var data = new
         {
-            notifications,
-            UnseenCount = unseenCount
+            unseenCount,
+            updatedCount
         };
+
         return res.SetSuccess(data);
     }
 

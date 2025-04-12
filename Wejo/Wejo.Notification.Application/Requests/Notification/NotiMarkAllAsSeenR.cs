@@ -5,7 +5,7 @@ using Common.Core.Requests;
 /// <summary>
 /// Request
 /// </summary>
-public class NotificationViewR : BaseR
+public class NotiMarkAllAsSeenR : BaseR
 {
     /// <summary>
     /// Notification type
