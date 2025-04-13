@@ -6,10 +6,10 @@ namespace Wejo.Notification.Application.Queries;
 using Common.Core.Enums;
 using Common.Core.Extensions;
 using Common.Domain.Interfaces;
-using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
 using Requests;
 using Validators;
+using Wejo.Notification.Application.Filters;
 using static Common.SeedWork.Constants.Error;
 
 /// <summary>
@@ -33,7 +33,7 @@ public class NotificationViewH : BaseH, IRequestHandler<NotificationViewR, Singl
     /// <returns>Return the result</returns>
     public async Task<SingleResponse> Handle(NotificationViewR request, CancellationToken cancellationToken)
     {
-        var res = new SingleResponse();
+        var res = new SearchResponse(request.PageNum, request.PageSize, request.Paging);
 
         var vr = new NotificationViewV().Validate(request);
         if (!vr.IsValid)
@@ -56,14 +56,38 @@ public class NotificationViewH : BaseH, IRequestHandler<NotificationViewR, Singl
         #endregion
 
         var query = _context.Notifications.Where(n => n.UserId == userId);
-        var type = request.Type.ToEnum(NotificationType.GameInvitation);
+        string? keyword = null;
+        NotificationType? type = null;
 
-        query = query.Where(n => n.Type == type);
+        #region -- Filter --
+        if (request.Filter != null)
+        {
+            var ft = keyword.ToInstNull<NotificationFilter.Search>();
+            if (ft != null)
+            {
+                type = ft.Type;
+            }
+        }
 
-        var notifications = await query
-            .OrderByDescending(user => user.CreatedOn)
-            .Select(user => user.ToViewDto())
-            .ToListAsync(cancellationToken);
+        if (!string.IsNullOrEmpty(request.UserId))
+        {
+            query = query.Where(n => n.UserId == request.UserId);
+        }
+
+        if (type.HasValue)
+        {
+            query = query.Where(p => p.Type == type.Value);
+        }
+
+        // Paging
+        res.TotalRecords = query.Count();
+        if (request.Paging)
+        {
+            query = query.Sort(request.Sort).PageBy(request.Offset, request.PageSize);
+        }
+        #endregion
+
+        var notifications = await (from noti in query select noti.ToViewDto()).ToListAsync(cancellationToken);
 
         var unseenCount = await _context.Notifications
                 .Where(n => n.UserId == userId && !n.IsSeen)
@@ -74,6 +98,7 @@ public class NotificationViewH : BaseH, IRequestHandler<NotificationViewR, Singl
             notifications,
             UnseenCount = unseenCount
         };
+
         return res.SetSuccess(data);
     }
 
