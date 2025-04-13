@@ -22,3 +22,6 @@ dotnet ef dbcontext scaffold "Host={Host};Database={DbName};Username={UserName};
 
 # Example build image:
 - docker build -t wejo_realtime_service -f Wejo.Realtime.API/Dockerfile . 
+
+# Example run image:
+- docker run -d -p 5000:80 --name wejo_realtime_service wejo_realtime_service

@@ -122,7 +122,7 @@ public class Program
         app.UseResponseCaching();
 
         // Explicitly set the API to listen on port 8081
-        app.Run();
+        app.Run("http://0.0.0.0:8084");
     }
 
     #endregion
