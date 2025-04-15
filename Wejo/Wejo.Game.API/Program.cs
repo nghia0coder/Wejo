@@ -63,6 +63,9 @@ public class Program
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
         builder.Services.AddScoped<IWejoContext>(p => p.GetService<WejoContext>()!);
 
+        // Cassandra
+        builder.Services.AddCassandra();
+
         // MediatR
         builder.Services.AddMediatR(p =>
         {
