@@ -70,6 +70,11 @@ public static class Error
     /// </summary>
     public const string E204 = "Only host can accept the player";
 
+    /// <summary>
+    /// User is not a participant of this game
+    /// </summary>
+    public const string E205 = "User is not a participant of this game";
+
     #endregion
 
     #region -- E3xx --

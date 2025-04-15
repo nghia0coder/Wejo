@@ -72,6 +72,7 @@ public class Program
             p.RegisterServicesFromAssembly(me.Assembly);
 
             p.AddDiGame();
+            p.AddDiGameChat();
             p.AddDiGameParticipant();
         });
         #endregion
