@@ -6,8 +6,8 @@
 public enum NotificationType
 {
     /// <summary>
-    /// GameInvitation
+    /// Game
     /// </summary>
-    GameInvitation
+    Game
 }
 

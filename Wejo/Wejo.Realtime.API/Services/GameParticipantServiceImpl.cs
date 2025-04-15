@@ -41,7 +41,7 @@ public class GameParticipantServiceImpl : GameParticipantServiceBase, IBaseServi
             .Select(g => new { g.Sport.Name, g.StartTime })
             .FirstOrDefaultAsync();
 
-        var type = NotificationType.GameInvitation;
+        var type = NotificationType.Game;
         var (title, messageTemplate) = MessageExtension.Templates[type];
         var messageFormat = string.Format(messageTemplate, requesterName, gameInfo!.Name, gameInfo.StartTime);
 

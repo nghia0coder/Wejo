@@ -56,7 +56,7 @@ public class NotiMarkAllAsSeenH : BaseH, IRequestHandler<NotiMarkAllAsSeenR, Sin
         #endregion
 
         var query = _context.Notifications.Where(n => n.UserId == userId);
-        var type = request.Type.ToEnum(NotificationType.GameInvitation);
+        var type = request.Type.ToEnum(NotificationType.Game);
 
         query = query.Where(n => n.Type == type);
 

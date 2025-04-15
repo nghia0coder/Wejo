@@ -16,7 +16,7 @@ public static class MessageExtension
     /// </summary>
     public static readonly Dictionary<NotificationType, (string Title, string MessageTemplate)> Templates = new()
     {
-        { NotificationType.GameInvitation, ("New Join Request", "{0} has requested to join your {1} game happening on {2}.") }
+        { NotificationType.Game, ("New Join Request", "{0} has requested to join your {1} game happening on {2}.") }
     };
 
     #endregion
