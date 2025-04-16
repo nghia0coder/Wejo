@@ -3,12 +3,14 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Wejo.Game.Application.Commands;
 
+using Common.Core.Constants;
 using Common.Core.Enums;
 using Common.Core.Extensions;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Dtos;
 using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
+using Infrastructure.MessageQueue;
 using Interfaces;
 using Request;
 using Validators;
@@ -25,9 +27,10 @@ public class GameChatSendMessageH : BaseH, IRequestHandler<GameChatSendMessageR,
     /// Initialize
     /// </summary>
     /// <param name="context">DB context</param>
-    public GameChatSendMessageH(IWejoContext context, IGameChatService gameChatService) : base(context)
+    public GameChatSendMessageH(IWejoContext context, IGameChatService gameChatService, IMessageQueue messageQueue) : base(context)
     {
         _gameChatService = gameChatService;
+        _messageQueue = messageQueue;
     }
 
     /// <summary>
@@ -75,33 +78,7 @@ public class GameChatSendMessageH : BaseH, IRequestHandler<GameChatSendMessageR,
 
         var data = await _gameChatService.SendMessageAsync(request.Id, userId, request, cancellationToken);
 
-        //// Tạo tin nhắn
-        //var messageId = Guid.NewGuid();
-        //var createdOn = DateTime.UtcNow;
-        //var bucket = int.Parse(createdOn.ToString("yyyyMM")); // Bucket theo tháng (202504)
-
-        //// Lưu vào Cassandra
-        //var insertQuery = "INSERT INTO game_chat_messages (game_id, bucket, message_id, user_id, message, created_on) VALUES (?, ?, ?, ?, ?, ?) USING TTL 604800";
-        //var preparedStatement = await _cassandraSession.PrepareAsync(insertQuery);
-        //var boundStatement = preparedStatement.Bind(gameId, bucket, messageId, userId, request.Message, createdOn);
-        //await _cassandraSession.ExecuteAsync(boundStatement);
-
-        //// Lấy thông tin người gửi
-        //var user = await _context.Users
-        //    .Where(u => u.Id == userId)
-        //    .Select(u => new { u.Id, FullName = u.FirstName + " " + u.LastName })
-        //    .FirstAsync(cancellationToken);
-
-        //var messageDto = new
-        //{
-        //    Id = messageId,
-        //    GameId = gameId,
-        //    UserId = userId,
-        //    UserName = user.FullName,
-        //    request.Message,
-        //    CreatedOn = createdOn
-        //};
-
+        await _messageQueue.PublishAsync(QueueName.GameChatMessage, new { GameId = request.Id.ToString(), Message = data });
 
         return res.SetSuccess(data);
     }
@@ -114,6 +91,11 @@ public class GameChatSendMessageH : BaseH, IRequestHandler<GameChatSendMessageR,
     /// GameChat Service
     /// </summary>
     private readonly IGameChatService _gameChatService;
+
+    /// <summary>
+    /// Message queue
+    /// </summary>
+    private readonly IMessageQueue _messageQueue;
 
     #endregion
 }

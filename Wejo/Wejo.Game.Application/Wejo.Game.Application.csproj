@@ -25,6 +25,7 @@
 		<ProjectReference Include="..\Wejo.Common.Core\Wejo.Common.Core.csproj" />
 		<ProjectReference Include="..\Wejo.Common.Domain\Wejo.Common.Domain.csproj" />
 		<ProjectReference Include="..\Wejo.Common.SeedWork\Wejo.Common.SeedWork.csproj" />
+		<ProjectReference Include="..\Wejo.Game.Infrastructure\Wejo.Game.Infrastructure.csproj" />
 		<Protobuf Include="..\Wejo.Common.Core\Protos\GameParticipants\game_participant.proto" GrpcServices="Client" Link="Protos\game_participant.proto" />
 	</ItemGroup>
 

@@ -11,6 +11,7 @@ using Common.Core.Protos;
 using Common.Domain.Database;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Extensions;
+using Infrastructure.MessageQueue;
 using static Common.SeedWork.Constants.Setting;
 
 /// <summary>
@@ -62,6 +63,9 @@ public class Program
 
         // GameChat Service
         builder.Services.AddScoped<IGameChatService, GameChatService>();
+
+        // Message Queue
+        builder.Services.AddSingleton<IMessageQueue, RabbitMQProducer>();
 
         // DbContext
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
