@@ -1,11 +1,18 @@
-﻿namespace Wejo.Game.Domain.Entities;
+﻿using CassandraQueryBuilder;
+
+namespace Wejo.Game.Domain.Entities;
 
 public class GameChatMessage
 {
-    public Guid Id { get; set; }
-    public Guid GameId { get; set; }
-    public int Bucket { get; set; }
-    public string UserId { get; set; } = null!;
-    public string Message { get; set; } = null!;
-    public DateTime CreatedOn { get; set; }
+    public static readonly Column GAME_ID = new Column("game_id", ColumnType.UUID);
+
+    public static readonly Column BUCKET = new Column("bucket", ColumnType.INT);
+
+    public static readonly Column MESSAGE_ID = new Column("message_id", ColumnType.UUID);
+
+    public static readonly Column USER_ID = new Column("user_id", ColumnType.TEXT);
+
+    public static readonly Column MESSAGE = new Column("message", ColumnType.TEXT);
+
+    public static readonly Column CREATED_ON = new Column("created_on", ColumnType.TIMESTAMP);
 }

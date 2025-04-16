@@ -5,6 +5,7 @@ namespace Wejo.Game.API;
 using Application;
 using Application.Extensions;
 using Application.Interfaces;
+using Application.Services;
 using Common.Core.Extensions;
 using Common.Core.Protos;
 using Common.Domain.Database;
@@ -58,6 +59,9 @@ public class Program
         builder.Services.AddSingleton<ISetting>(st!);
 
         builder.Services.AddSingleton<IConfiguration>(builder.Configuration);
+
+        // GameChat Service
+        builder.Services.AddScoped<IGameChatService, GameChatService>();
 
         // DbContext
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
