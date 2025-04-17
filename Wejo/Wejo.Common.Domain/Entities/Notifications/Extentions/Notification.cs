@@ -25,7 +25,7 @@ partial class Notification
     /// <param name="message"></param>
     /// <param name="relatedEntityId"></param>
     /// <param name="isRead"></param>
-    public static Notification Create(string userId, NotificationType type, string title, string message, Guid relatedEntityId, bool isRead)
+    public static Notification Create(string userId, NotificationType type, string title, string message, Guid relatedEntityId, bool isRead, bool isSeen)
     {
         var res = new Notification
         {
@@ -35,6 +35,7 @@ partial class Notification
             Message = message,
             RelatedEntityId = relatedEntityId,
             IsRead = isRead,
+            IsSeen = isSeen,
         };
 
         return res;

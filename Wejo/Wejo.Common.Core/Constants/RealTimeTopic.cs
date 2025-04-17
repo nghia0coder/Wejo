@@ -7,4 +7,10 @@ public static class RealTimeTopic
     public const string ReceiveNotification = "ReceiveNotification";
 
     #endregion
+
+    #region Game
+
+    public const string ReceiveGameMessage = "ReceiveGameMessage";
+
+    #endregion
 }

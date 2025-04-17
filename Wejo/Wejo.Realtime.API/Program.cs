@@ -9,6 +9,7 @@ using Common.Domain.Interfaces;
 using Common.SeedWork.Extensions;
 using Hubs;
 using Services;
+using Wejo.Realtime.API.MessageQueue;
 using static Common.SeedWork.Constants.Setting;
 
 /// <summary>
@@ -70,6 +71,8 @@ public class Program
         #region -- Setup DI --
         // Setting
         builder.Services.AddSingleton<ISetting>(st!);
+
+        builder.Services.AddHostedService<GameChatConsumer>();
 
         // DbContext
         builder.Services.AddDbContext<WejoContext>(p => p.UseNpgsql(csDb!, p => p.MigrationsAssembly(assembly).EnableRetryOnFailure()), ServiceLifetime.Scoped);
@@ -163,6 +166,7 @@ public class Program
         app.UseResponseCaching();
         app.MapGrpcService<GameParticipantServiceImpl>();
         app.MapHub<NotificationHub>("/notificationHub");
+        app.MapHub<GameChatHub>("/gamechatHub");
 
         app.Run();
     }

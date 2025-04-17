@@ -45,7 +45,7 @@ public class GameParticipantServiceImpl : GameParticipantServiceBase, IBaseServi
         var (title, messageTemplate) = MessageExtension.Templates[type];
         var messageFormat = string.Format(messageTemplate, requesterName, gameInfo!.Name, gameInfo.StartTime);
 
-        var ett = Notification.Create(request.HostId, type, title, messageFormat, gameId, false);
+        var ett = Notification.Create(request.HostId, type, title, messageFormat, gameId, false, false);
 
         _context.Notifications.Add(ett);
         await _context.SaveChangesAsync(default);
@@ -60,6 +60,7 @@ public class GameParticipantServiceImpl : GameParticipantServiceBase, IBaseServi
                 ett.Message,
                 ett.RelatedEntityId,
                 ett.IsRead,
+                ett.IsSeen,
                 CreatedOn = ett.CreatedOn.ToString("o")
             });
 
