@@ -154,9 +154,8 @@ public partial class WejoContext : DbContext, IWejoContext
             entity.Property(e => e.IsRead)
                 .HasDefaultValue(false)
                 .HasComment("Indicates if the notification has been read");
-            entity.Property(e => e.IsSeen)
 
-                .HasDefaultValue(false);
+
             entity.Property(e => e.Message).HasComment("Detailed message content");
             entity.Property(e => e.RelatedEntityId).HasComment("Optional ID of related entity (e.g., GameId)");
             entity.Property(e => e.Title)
