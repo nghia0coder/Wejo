@@ -8,6 +8,11 @@ public enum NotificationType
     /// <summary>
     /// Game
     /// </summary>
-    Game
+    Game,
+
+    /// <summary>
+    /// Abc
+    /// </summary>
+    Abc
 }
 

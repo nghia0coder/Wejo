@@ -1,8 +1,48 @@
 ﻿version: '3.8'
 
 services:
+  rabbitmq:
+    image: rabbitmq:3.13-management
+    container_name: rabbitmq
+    ports:
+        - "5672:5672" 
+        - "15672:15672"
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
+    volumes:
+      - rabbitmq-data:/var/lib/rabbitmq  # Persistent volume for RabbitMQ
+    networks:
+      - wejo-network
+
+  cassandra:
+    image: cassandra:4.1
+    container_name: cassandra
+    ports:
+      - "9042:9042"
+    volumes:
+      - cassandra-data:/var/lib/cassandra  # Persistent volume for Cassandra
+    environment:
+      - CASSANDRA_CLUSTER_NAME=wejo_cluster
+    networks:
+      - wejo-network
+
+  postgres:
+    image: postgres:16
+    container_name: postgres
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=3boyteam
+      - POSTGRES_PASSWORD=QwerPoiu@2025
+      - POSTGRES_DB=dev_wejo
+    volumes:
+      - postgres-data:/var/lib/postgresql/data  # Persistent volume for PostgreSQL
+    networks:
+      - wejo-network
+
   notification-service:
-    image: lemichael52/wejo_notification_service 
+    image: lemichael52/wejo_notification_service
     build:
       context: .
       dockerfile: Wejo.Notification.API/Dockerfile
@@ -13,7 +53,7 @@ services:
       - "8084:8084"
     environment:
       - Wejo_Com_Environment=local
-      - Wejo_Ide_Db_Host=34.142.173.238
+      - Wejo_Ide_Db_Host=postgres  # Update to use container name
       - Wejo_Ide_Db_Port=5432
       - Wejo_Ide_Db_Name=dev_wejo
       - Wejo_Ide_Db_UserName=3boyteam
@@ -22,8 +62,13 @@ services:
       - Wejo_Ide_DevMode=TRUE
       - Wejo_Ide_Protocols="Http1_8081"
       - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - postgres
+    networks:
+      - wejo-network
+
   realtime-service:
-    image: lemichael52/wejo_realtime_service 
+    image: lemichael52/wejo_realtime_service
     build:
       context: .
       dockerfile: Wejo.Realtime.API/Dockerfile
@@ -35,7 +80,7 @@ services:
       - "5001:5001"
     environment:
       - Wejo_Com_Environment=local
-      - Wejo_Ide_Db_Host=34.142.173.238
+      - Wejo_Ide_Db_Host=postgres  # Update to use container name
       - Wejo_Ide_Db_Port=5432
       - Wejo_Ide_Db_Name=dev_wejo
       - Wejo_Ide_Db_UserName=3boyteam
@@ -44,8 +89,14 @@ services:
       - Wejo_Ide_DevMode=TRUE
       - ASPNETCORE_URLS=http://+:8083;http://+:5001
       - ASPNETCORE_ENVIRONMENT=Development
+    depends_on:
+      - rabbitmq
+      - postgres
+    networks:
+      - wejo-network
+
   game-service:
-    image: lemichael52/wejo_game_service 
+    image: lemichael52/wejo_game_service
     build:
       context: .
       dockerfile: Wejo.Game.API/Dockerfile
@@ -56,7 +107,7 @@ services:
       - "8081:8081"
     environment:
       - Wejo_Com_Environment=local
-      - Wejo_Ide_Db_Host=34.142.173.238
+      - Wejo_Ide_Db_Host=postgres  # Update to use container name
       - Wejo_Ide_Db_Port=5432
       - Wejo_Ide_Db_Name=dev_wejo
       - Wejo_Ide_Db_UserName=3boyteam
@@ -67,7 +118,13 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - GrpcClient__NotificationService=https://wejo_realtime_service:5001
     depends_on:
+      - rabbitmq
+      - cassandra
+      - postgres
       - realtime-service
+    networks:
+      - wejo-network
+
   identity-service:
     image: lemichael52/wejo_identity_service
     build:
@@ -77,20 +134,24 @@ services:
         ENVIRONMENT: Development
     container_name: wejo_identity_service
     ports:
-      - "8080:8080"  # First argument mapping for identity-service
+      - "8080:8080"
     depends_on:
-      - game-service  # Ensures game-service starts first
+      - game-service
+      - postgres
     environment:
       - Wejo_Com_Environment=local
-      - Wejo_Ide_Db_Host=34.142.173.238
+      - Wejo_Ide_Db_Host=postgres  # Update to use container name
       - Wejo_Ide_Db_Port=5432
       - Wejo_Ide_Db_Name=dev_wejo
       - Wejo_Ide_Db_UserName=3boyteam
       - Wejo_Ide_Db_Password=QwerPoiu@2025
       - Wejo_Ide_SwaggerEnabled=TRUE
       - Wejo_Ide_DevMode=TRUE
-      - Wejo_Ide_Protocols="Http1_8080"
+      - Wejo_Ide_Protocols="Http1_8085"
       - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - wejo-network
+
   job-service:
     image: lemichael52/wejo_job_service
     build:
@@ -100,13 +161,14 @@ services:
         ENVIRONMENT: Development
     container_name: wejo_job_service
     ports:
-      - "8082:8082"  # First argument mapping for job-service
+      - "8082:8082"
     depends_on:
       - identity-service
       - game-service
+      - postgres
     environment:
       - Wejo_Com_Environment=local
-      - Wejo_Job_Db_Host=34.142.173.238
+      - Wejo_Job_Db_Host=postgres  # Update to use container name
       - Wejo_Job_Db_Port=5432
       - Wejo_Job_Db_Name=dev_wejo
       - Wejo_Job_Db_UserName=3boyteam
@@ -115,3 +177,14 @@ services:
       - Wejo_Job_DevMode=TRUE
       - Wejo_Job_Protocols="Http1_8080"
       - ASPNETCORE_ENVIRONMENT=Development
+    networks:
+      - wejo-network
+
+volumes:
+  cassandra-data:
+  rabbitmq-data:
+  postgres-data:
+
+networks:
+  wejo-network:
+    driver: bridge
