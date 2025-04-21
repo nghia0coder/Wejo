@@ -26,7 +26,7 @@ public class GameChatConsumer : BackgroundService
     {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = "hcmsiu.xyz",
             Port = 5672,
             UserName = "guest",
             Password = "guest"

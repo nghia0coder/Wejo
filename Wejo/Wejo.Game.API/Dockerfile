@@ -15,6 +15,7 @@ COPY ["Wejo.Game.API/Wejo.Game.API.csproj", "Wejo.Game.API/"]
 COPY ["Wejo.Common.Core/Wejo.Common.Core.csproj", "Wejo.Common.Core/"]
 COPY ["Wejo.Common.SeedWork/Wejo.Common.SeedWork.csproj", "Wejo.Common.SeedWork/"]
 COPY ["Wejo.Game.Application/Wejo.Game.Application.csproj", "Wejo.Game.Application/"]
+COPY ["Wejo.Game.Infrastructure/Wejo.Game.Infrastructure.csproj", "Wejo.Game.Infrastructure/"]
 COPY ["Wejo.Common.Domain/Wejo.Common.Domain.csproj", "Wejo.Common.Domain/"]
 RUN dotnet restore "./Wejo.Game.API/Wejo.Game.API.csproj"
 COPY . .
