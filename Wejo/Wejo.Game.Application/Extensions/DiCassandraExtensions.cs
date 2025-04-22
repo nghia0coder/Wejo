@@ -17,7 +17,7 @@ public static class DiCassandraExtensions
     public static IServiceCollection AddCassandra(this IServiceCollection services)
     {
         var cluster = Cluster.Builder()
-            .AddContactPoint("cassandra")
+            .AddContactPoint("localhost") // Change to localhost if running locally
             .WithPort(9042)
             .WithRetryPolicy(new DefaultRetryPolicy())
             .Build();

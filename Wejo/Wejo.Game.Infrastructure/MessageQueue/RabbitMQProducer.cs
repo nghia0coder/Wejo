@@ -23,7 +23,7 @@ public class RabbitMQProducer : IMessageQueue, IAsyncDisposable
     {
         var factory = new ConnectionFactory
         {
-            HostName = "rabbitmq",
+            HostName = "localhost", // Change to localhost if running locally
             Port = 5672,
             UserName = "wejo",
             Password = "wejo"
