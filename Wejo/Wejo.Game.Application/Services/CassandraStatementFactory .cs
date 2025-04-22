@@ -1,0 +1,95 @@
+﻿using Cassandra;
+using CassandraQueryBuilder;
+
+namespace Wejo.Game.Application.Services;
+
+using Common.SeedWork;
+using Domain.Entities;
+using Interfaces;
+
+/// <summary>
+/// Implementation of the Cassandra statement factory
+/// </summary>
+public class CassandraStatementFactory : ICassandraStatementFactory
+{
+    private readonly ISession _cassandraSession;
+    private readonly ChatConfig _config;
+
+    private const string TableName = "game_chat_messages";
+    private const string ReadStatusTableName = "game_chat_read_status";
+    private static readonly Column[] MessageColumns = [GameChatMessage.GAME_ID,
+                                                       GameChatMessage.BUCKET,
+                                                       GameChatMessage.MESSAGE_ID,
+                                                       GameChatMessage.USER_ID,
+                                                       GameChatMessage.MESSAGE,
+                                                       GameChatMessage.CREATED_ON];
+
+    /// <summary>
+    /// Initializes a new instance of the CassandraStatementFactory
+    /// </summary>
+    /// <param name="cassandraSession">Cassandra session</param>
+    /// <param name="config">Repository configuration</param>
+    public CassandraStatementFactory(ISession cassandraSession, ChatConfig config)
+    {
+        _cassandraSession = cassandraSession ?? throw new ArgumentNullException(nameof(cassandraSession));
+        _config = config ?? throw new ArgumentNullException(nameof(config));
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateInsertMessageStatement()
+    {
+        var insertQuery = new Insert().Keyspace("wejo")
+            .Table(TableName)
+            .TTL()
+            .InsertColumns(MessageColumns)
+            .ToString();
+
+        return _cassandraSession.Prepare(insertQuery);
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateSelectMessagesBeforeStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"SELECT message_id, user_id, message, created_on " +
+            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on < ? LIMIT ?");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateSelectMessagesAfterStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"SELECT message_id, user_id, message, created_on " +
+            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on > ? LIMIT ?");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateSelectMessagesBeforeFromUserStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"SELECT message_id, user_id, message, created_on " +
+            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on < ? AND user_id = ? LIMIT ?");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateSelectMessagesAfterFromUserStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"SELECT message_id, user_id, message, created_on " +
+            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on > ? AND user_id = ? LIMIT ?");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateSelectReadStatusStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"SELECT user_id, last_read_message_id, last_read_timestamp FROM {ReadStatusTableName} WHERE game_id = ? AND user_id IN ?");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateUpdateReadStatusStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"INSERT INTO {ReadStatusTableName} (game_id, user_id, last_read_message_id, last_read_timestamp) VALUES (?, ?, ?, ?)");
+    }
+}
