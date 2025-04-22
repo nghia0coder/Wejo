@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.SignalR;
+using Polly;
 using RabbitMQ.Client;
 using RabbitMQ.Client.Events;
 using System.Text.Json;
@@ -26,13 +27,19 @@ public class GameChatConsumer : BackgroundService
     {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = "rabbitmq",
             Port = 5672,
-            UserName = "guest",
-            Password = "guest"
+            UserName = "wejo",
+            Password = "wejo"
         };
 
-        _connection = await factory.CreateConnectionAsync();
+        _connection = await Policy
+            .Handle<RabbitMQ.Client.Exceptions.BrokerUnreachableException>()
+            .WaitAndRetryAsync(5, retryAttempt => TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)), (exception, timeSpan, retryCount, context) =>
+            {
+                Console.WriteLine($"Retry {retryCount} for RabbitMQ connection: {exception.Message}. Waiting {timeSpan.TotalSeconds} seconds.");
+            })
+            .ExecuteAsync(async () => await factory.CreateConnectionAsync());
         _channel = await _connection.CreateChannelAsync();
 
         await _channel.QueueDeclareAsync(

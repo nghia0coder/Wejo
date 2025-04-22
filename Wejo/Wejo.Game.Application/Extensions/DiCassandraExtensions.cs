@@ -17,8 +17,9 @@ public static class DiCassandraExtensions
     public static IServiceCollection AddCassandra(this IServiceCollection services)
     {
         var cluster = Cluster.Builder()
-            .AddContactPoint("localhost")
+            .AddContactPoint("cassandra")
             .WithPort(9042)
+            .WithRetryPolicy(new DefaultRetryPolicy())
             .Build();
         var session = cluster.Connect("wejo");
 

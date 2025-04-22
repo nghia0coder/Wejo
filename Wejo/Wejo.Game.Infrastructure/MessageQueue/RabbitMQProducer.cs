@@ -23,10 +23,10 @@ public class RabbitMQProducer : IMessageQueue, IAsyncDisposable
     {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost",
+            HostName = "rabbitmq",
             Port = 5672,
-            UserName = "guest",
-            Password = "guest"
+            UserName = "wejo",
+            Password = "wejo"
         };
 
         _connection = await factory.CreateConnectionAsync();

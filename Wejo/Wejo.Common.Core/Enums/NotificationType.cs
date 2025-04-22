@@ -11,8 +11,8 @@ public enum NotificationType
     Game,
 
     /// <summary>
-    /// Abc
+    /// Playpal
     /// </summary>
-    Abc
+    Playpal
 }
 

@@ -31,7 +31,7 @@ pipeline {
                     ).trim().split("\n").findAll { it }
 
                     env.UPDATE_COMMON = changedFiles.any { it.startsWith("Wejo/Wejo.Common") } ? "true" : "false"
-                    env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.Game.API/") || it.startsWith("Wejo/Wejo.Game.Application/") } ? "true" : "false"
+                    env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.Game.API/") || it.startsWith("Wejo/Wejo.Game.Application/") || it.startsWith("Wejo/Wejo.Game.Infrastructure/") } ? "true" : "false"
                     env.UPDATE_IDENTITY = changedFiles.any { it.startsWith("Wejo/Wejo.Identity.API/") || it.startsWith("Wejo/Wejo.Identity.Application/") } ? "true" : "false"
                     env.UPDATE_JOB = changedFiles.any { it.startsWith("Wejo/Wejo.Backgroud.Job/") } ? "true" : "false"
                     env.UPDATE_REALTIME = changedFiles.any { it.startsWith("Wejo/Wejo.Realtime.API/") } ? "true" : "false"
@@ -122,15 +122,15 @@ pipeline {
                         echo "Deploying updated system..."
                         sh """
                             cd ${WORKSPACE}/Wejo
-                            docker-compose stop game-service identity-service job-service realtime-service notification-service
-                            docker-compose rm -f game-service identity-service job-service realtime-service notification-service
+                            docker-compose stop game-service identity-service job-service realtime-service notification-service cassandra rabbitmq
+                            docker-compose rm -f game-service identity-service job-service realtime-service notification-service cassandra rabbitmq
                             docker pull ${DOCKER_IMAGE_GAME}
                             docker pull ${DOCKER_IMAGE_IDENTITY}
                             docker pull ${DOCKER_IMAGE_JOB}
                             docker pull ${DOCKER_IMAGE_REALTIME}
                             docker pull ${DOCKER_IMAGE_NOTIFICATION}
                             
-                            docker compose up -d --force-recreate game-service identity-service job-service realtime-service notification-service 
+                            docker compose up -d --force-recreate game-service identity-service job-service realtime-service notification-service cassandra rabbitmq
                         """
                     } else {
                         if (env.UPDATE_GAME == "true") {

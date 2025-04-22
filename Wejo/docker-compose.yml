@@ -8,12 +8,18 @@ services:
         - "5672:5672" 
         - "15672:15672"
     environment:
-      - RABBITMQ_DEFAULT_USER=guest
-      - RABBITMQ_DEFAULT_PASS=guest
+      - RABBITMQ_DEFAULT_USER=wejo
+      - RABBITMQ_DEFAULT_PASS=wejo
     volumes:
       - rabbitmq-data:/var/lib/rabbitmq  # Persistent volume for RabbitMQ
     networks:
       - wejo-network
+    restart: unless-stopped
+    healthcheck:
+        test: ["CMD", "rabbitmqctl", "status"]
+        interval: 10s
+        timeout: 5s
+        retries: 10
 
   cassandra:
     image: cassandra:4.1
@@ -26,6 +32,12 @@ services:
       - CASSANDRA_CLUSTER_NAME=wejo_cluster
     networks:
       - wejo-network
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   postgres:
     image: postgres:16
@@ -40,6 +52,13 @@ services:
       - postgres-data:/var/lib/postgresql/data  # Persistent volume for PostgreSQL
     networks:
       - wejo-network
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U 3boyteam -d dev_wejo"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 30s
 
   notification-service:
     image: lemichael52/wejo_notification_service
@@ -90,8 +109,10 @@ services:
       - ASPNETCORE_URLS=http://+:8083;http://+:5001
       - ASPNETCORE_ENVIRONMENT=Development
     depends_on:
-      - rabbitmq
-      - postgres
+      rabbitmq:
+        condition: service_healthy
+      postgres:
+        condition: service_started
     networks:
       - wejo-network
 
@@ -118,12 +139,15 @@ services:
       - ASPNETCORE_ENVIRONMENT=Development
       - GrpcClient__NotificationService=https://wejo_realtime_service:5001
     depends_on:
-      - rabbitmq
-      - cassandra
-      - postgres
-      - realtime-service
+      cassandra:
+        condition: service_healthy
+      rabbitmq:
+        condition: service_started
+      postgres:
+        condition: service_healthy
     networks:
       - wejo-network
+    restart: unless-stopped
 
   identity-service:
     image: lemichael52/wejo_identity_service
