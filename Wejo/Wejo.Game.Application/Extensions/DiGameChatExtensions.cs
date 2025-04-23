@@ -5,6 +5,7 @@ namespace Wejo.Game.Application.Extensions;
 
 using Commands;
 using Common.SeedWork.Responses;
+using Queries;
 using Request;
 
 /// <summary>
@@ -42,6 +43,7 @@ public static class DiGameChatExtensions
     /// <param name="life">ServiceLifetime</param>
     public static void AddGameChatQueries(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
+        p.AddBehavior<IRequestHandler<GameChatGetMessageR, SingleResponse>, GameChatGetMessageH>(life);
     }
 
     #endregion

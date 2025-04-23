@@ -1,7 +1,12 @@
 ﻿using Cassandra;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace Wejo.Game.Application.Extensions;
+
+using Common.SeedWork;
+using Interfaces;
+using Services;
 
 /// <summary>
 /// DI extension
@@ -14,7 +19,7 @@ public static class DiCassandraExtensions
     /// Add DI for Cassandra
     /// </summary>
     /// <param name="services">Service</param>
-    public static IServiceCollection AddCassandra(this IServiceCollection services)
+    public static IServiceCollection AddCassandra(this IServiceCollection services, IConfiguration configuration)
     {
         var cluster = Cluster.Builder()
             .AddContactPoint("localhost") // Change to localhost if running locally
@@ -23,7 +28,13 @@ public static class DiCassandraExtensions
             .Build();
         var session = cluster.Connect("wejo");
 
+        var chatConfig = new ChatConfig();
+        services.AddSingleton(chatConfig);
+
+        services.AddSingleton<ICassandraStatementFactory, CassandraStatementFactory>();
+
         services.AddSingleton<ISession>(session);
+
         return services;
     }
 

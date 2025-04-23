@@ -28,4 +28,21 @@ public class GameChatController : BaseController
 
         return Ok(response);
     }
+
+    /// <summary>
+    /// Get message in game room.
+    /// </summary>
+    /// <param name="request">Get Message to game room</param>
+    /// <returns>Message in the room</returns>
+    [HttpGet("get-messages")]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetMessage([FromQuery] GameChatGetMessageR request)
+    {
+        request.Analyze(HttpContext);
+
+        var response = await _mediator.Send(request);
+        response.ReturnUrl = AbsoluteUri;
+
+        return Ok(response);
+    }
 }

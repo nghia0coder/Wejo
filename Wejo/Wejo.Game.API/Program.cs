@@ -72,7 +72,7 @@ public class Program
         builder.Services.AddScoped<IWejoContext>(p => p.GetService<WejoContext>()!);
 
         // Cassandra
-        builder.Services.AddCassandra();
+        builder.Services.AddCassandra(builder.Configuration);
 
         // MediatR
         builder.Services.AddMediatR(p =>
