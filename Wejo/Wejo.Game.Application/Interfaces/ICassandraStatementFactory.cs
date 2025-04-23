@@ -5,6 +5,7 @@ namespace Wejo.Game.Application.Interfaces;
 public interface ICassandraStatementFactory
 {
     PreparedStatement CreateInsertMessageStatement();
+    PreparedStatement CreateInsertMessageByUserStatement();
     PreparedStatement CreateSelectMessagesBeforeStatement();
     PreparedStatement CreateSelectMessagesAfterStatement();
     PreparedStatement CreateSelectMessagesBeforeFromUserStatement();

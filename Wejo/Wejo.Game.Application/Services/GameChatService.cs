@@ -1,5 +1,4 @@
 ﻿using Cassandra;
-using CassandraQueryBuilder;
 using Microsoft.EntityFrameworkCore;
 
 namespace Wejo.Game.Application.Services;
@@ -22,15 +21,9 @@ public class GameChatService : BaseH, IGameChatService
 
     private readonly ISession _cassandraSession;
 
-    private readonly PreparedStatement _insertMessageStatement;
-
-    private readonly PreparedStatement _insertMessageByUserStatement;
-
     private readonly ICassandraStatementFactory _statementFactory;
 
     private readonly ChatConfig _config;
-
-    private readonly string[] TableName = { "game_chat_messages", "game_chat_messages_by_user" };
 
     #endregion
 
@@ -46,35 +39,6 @@ public class GameChatService : BaseH, IGameChatService
         _cassandraSession = cassandraSession;
         _statementFactory = cassandraStatementFactory;
         _config = config;
-
-        var insertQuery1 = new Insert().Keyspace("wejo")
-            .Table(TableName[0])
-            .TTL()
-            .InsertColumns(
-                GameChatMessage.GAME_ID,
-                GameChatMessage.BUCKET,
-                GameChatMessage.MESSAGE_ID,
-                GameChatMessage.USER_ID,
-                GameChatMessage.MESSAGE,
-                GameChatMessage.CREATED_ON
-            )
-            .ToString();
-
-        var insertQuery2 = new Insert().Keyspace("wejo")
-            .Table(TableName[1])
-            .TTL()
-            .InsertColumns(
-                GameChatMessage.GAME_ID,
-                GameChatMessage.BUCKET,
-                GameChatMessage.MESSAGE_ID,
-                GameChatMessage.USER_ID,
-                GameChatMessage.MESSAGE,
-                GameChatMessage.CREATED_ON
-            )
-            .ToString();
-
-        _insertMessageStatement = _cassandraSession.Prepare(insertQuery1);
-        _insertMessageByUserStatement = _cassandraSession.Prepare(insertQuery2);
     }
 
     #endregion
@@ -92,7 +56,8 @@ public class GameChatService : BaseH, IGameChatService
 
         var batch = new BatchStatement();
 
-        var boundStatement = _insertMessageStatement.Bind(
+        var insertMessageStatement = _statementFactory.CreateInsertMessageStatement();
+        var boundStatement = insertMessageStatement.Bind(
             gameId,
             bucket,
             messageId,
@@ -100,10 +65,10 @@ public class GameChatService : BaseH, IGameChatService
             request.Message,
             createdOn
         );
-
         batch.Add(boundStatement);
 
-        var boundByUserStatement = _insertMessageByUserStatement.Bind(
+        var insertMessageByUserStatement = _statementFactory.CreateInsertMessageByUserStatement();
+        var boundByUserStatement = insertMessageByUserStatement.Bind(
             gameId,
             bucket,
             messageId,

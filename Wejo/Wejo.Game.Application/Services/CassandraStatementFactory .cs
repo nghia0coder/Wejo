@@ -43,7 +43,17 @@ public class CassandraStatementFactory : ICassandraStatementFactory
             .TTL()
             .InsertColumns(MessageColumns)
             .ToString();
+        return _cassandraSession.Prepare(insertQuery);
+    }
 
+    /// <inheritdoc/>
+    public PreparedStatement CreateInsertMessageByUserStatement()
+    {
+        var insertQuery = new Insert().Keyspace("wejo")
+            .Table(TableName[1])
+            .TTL()
+            .InsertColumns(MessageColumns)
+            .ToString();
         return _cassandraSession.Prepare(insertQuery);
     }
 
