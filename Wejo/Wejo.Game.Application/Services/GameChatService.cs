@@ -24,11 +24,13 @@ public class GameChatService : BaseH, IGameChatService
 
     private readonly PreparedStatement _insertMessageStatement;
 
+    private readonly PreparedStatement _insertMessageByUserStatement;
+
     private readonly ICassandraStatementFactory _statementFactory;
 
     private readonly ChatConfig _config;
 
-    private const string TableName = "game_chat_messages";
+    private readonly string[] TableName = { "game_chat_messages", "game_chat_messages_by_user" };
 
     #endregion
 
@@ -45,8 +47,8 @@ public class GameChatService : BaseH, IGameChatService
         _statementFactory = cassandraStatementFactory;
         _config = config;
 
-        var insertQuery = new Insert().Keyspace("wejo")
-            .Table(TableName)
+        var insertQuery1 = new Insert().Keyspace("wejo")
+            .Table(TableName[0])
             .TTL()
             .InsertColumns(
                 GameChatMessage.GAME_ID,
@@ -58,7 +60,21 @@ public class GameChatService : BaseH, IGameChatService
             )
             .ToString();
 
-        _insertMessageStatement = _cassandraSession.Prepare(insertQuery);
+        var insertQuery2 = new Insert().Keyspace("wejo")
+            .Table(TableName[1])
+            .TTL()
+            .InsertColumns(
+                GameChatMessage.GAME_ID,
+                GameChatMessage.BUCKET,
+                GameChatMessage.MESSAGE_ID,
+                GameChatMessage.USER_ID,
+                GameChatMessage.MESSAGE,
+                GameChatMessage.CREATED_ON
+            )
+            .ToString();
+
+        _insertMessageStatement = _cassandraSession.Prepare(insertQuery1);
+        _insertMessageByUserStatement = _cassandraSession.Prepare(insertQuery2);
     }
 
     #endregion
@@ -74,6 +90,8 @@ public class GameChatService : BaseH, IGameChatService
         var createdOn = DateTime.UtcNow;
         var bucket = int.Parse(createdOn.ToString("yyyyMM")); // E.g., 202504
 
+        var batch = new BatchStatement();
+
         var boundStatement = _insertMessageStatement.Bind(
             gameId,
             bucket,
@@ -82,6 +100,18 @@ public class GameChatService : BaseH, IGameChatService
             request.Message,
             createdOn
         );
+
+        batch.Add(boundStatement);
+
+        var boundByUserStatement = _insertMessageByUserStatement.Bind(
+            gameId,
+            bucket,
+            messageId,
+            userId,
+            request.Message,
+            createdOn
+        );
+        batch.Add(boundByUserStatement);
 
         var user = await _context.Users
             .Where(u => u.Id == userId)
@@ -98,7 +128,7 @@ public class GameChatService : BaseH, IGameChatService
             CreatedOn = createdOn
         };
 
-        await _cassandraSession.ExecuteAsync(boundStatement);
+        await _cassandraSession.ExecuteAsync(batch).ConfigureAwait(false);
 
         return messageDto;
     }

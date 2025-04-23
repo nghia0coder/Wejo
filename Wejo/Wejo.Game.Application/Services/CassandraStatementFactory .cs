@@ -15,7 +15,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     private readonly ISession _cassandraSession;
     private readonly ChatConfig _config;
 
-    private const string TableName = "game_chat_messages";
+    private readonly string[] TableName = { "game_chat_messages", "game_chat_messages_by_user" };
     private const string ReadStatusTableName = "game_chat_read_status";
     private static readonly Column[] MessageColumns = [GameChatMessage.GAME_ID,
                                                        GameChatMessage.BUCKET,
@@ -39,7 +39,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     public PreparedStatement CreateInsertMessageStatement()
     {
         var insertQuery = new Insert().Keyspace("wejo")
-            .Table(TableName)
+            .Table(TableName[0])
             .TTL()
             .InsertColumns(MessageColumns)
             .ToString();
@@ -52,7 +52,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     {
         return _cassandraSession.Prepare(
             $"SELECT message_id, user_id, message, created_on " +
-            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on < ? LIMIT ?");
+            $"FROM {TableName[0]} WHERE game_id = ? AND bucket = ? AND created_on < ? LIMIT ?");
     }
 
     /// <inheritdoc/>
@@ -60,7 +60,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     {
         return _cassandraSession.Prepare(
             $"SELECT message_id, user_id, message, created_on " +
-            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on > ? LIMIT ?");
+            $"FROM {TableName[0]} WHERE game_id = ? AND bucket = ? AND created_on > ? LIMIT ?");
     }
 
     /// <inheritdoc/>
@@ -68,7 +68,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     {
         return _cassandraSession.Prepare(
             $"SELECT message_id, user_id, message, created_on " +
-            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on < ? AND user_id = ? LIMIT ?");
+            $"FROM {TableName[1]} WHERE game_id = ? AND bucket = ? AND created_on < ? AND user_id = ? LIMIT ?");
     }
 
     /// <inheritdoc/>
@@ -76,7 +76,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     {
         return _cassandraSession.Prepare(
             $"SELECT message_id, user_id, message, created_on " +
-            $"FROM {TableName} WHERE game_id = ? AND bucket = ? AND created_on > ? AND user_id = ? LIMIT ?");
+            $"FROM {TableName[1]} WHERE game_id = ? AND bucket = ? AND created_on > ? AND user_id = ? LIMIT ?");
     }
 
     /// <inheritdoc/>

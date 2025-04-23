@@ -72,7 +72,7 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
         }
         #endregion
 
-        var data = await _gameChatService.GetMessagesAsync(request.Id, request.Before, request.After, request.UserId,
+        var data = await _gameChatService.GetMessagesAsync(request.Id, request.Before, request.After, request.FromUser,
             request.Limit, cancellationToken);
 
         return res.SetSuccess(data);
