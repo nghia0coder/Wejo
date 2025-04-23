@@ -5,9 +5,8 @@ namespace Wejo.Game.Application.Extensions;
 
 using Commands;
 using Common.SeedWork.Responses;
+using Queries;
 using Request;
-using Wejo.Game.Application.Queries.GameSearch;
-using Wejo.Game.Application.Request.Games;
 
 /// <summary>
 /// DI extension
@@ -45,6 +44,7 @@ public static class DiGameExtensions
     /// <param name="life">ServiceLifetime</param>
     public static void AddGameQueries(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
+        p.AddBehavior<IRequestHandler<GameViewR, SingleResponse>, GameViewH>(life);
     }
 
     #endregion

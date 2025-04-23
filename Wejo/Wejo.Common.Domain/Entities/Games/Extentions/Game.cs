@@ -75,7 +75,7 @@ partial class Game
         return new T
         {
             Id = Id,
-            SportId = SportId,
+            SportId = (SportType)SportId,
             CreatedBy = CreatedBy,
             SportFormatId = SportFormatId,
             VenueId = VenueId,
@@ -99,7 +99,9 @@ partial class Game
     {
         #region -- Properties --
 
-        public int? SportId { get; set; }
+        public string SportName => SportId?.ToString() ?? string.Empty;
+
+        public SportType? SportId { get; set; }
 
         public string CreatedBy { get; set; } = null!;
 

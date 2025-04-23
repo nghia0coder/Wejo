@@ -6,19 +6,19 @@
 public enum SportType
 {
     /// <summary>
+    /// Badminton
+    /// </summary>
+    Badminton = 1,
+
+    /// <summary>
     /// Football
     /// </summary>
-    Football = 1,
+    Footbal,
 
     /// <summary>
     /// Basketball
     /// </summary>
     Basketball,
-
-    /// <summary>
-    /// Badminton
-    /// </summary>
-    Badminton,
 
     /// <summary>
     /// Tennis
