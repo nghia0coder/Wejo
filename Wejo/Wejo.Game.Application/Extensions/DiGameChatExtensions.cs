@@ -34,6 +34,7 @@ public static class DiGameChatExtensions
     public static void AddGameChatCommands(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
         p.AddBehavior<IRequestHandler<GameChatSendMessageR, SingleResponse>, GameChatSendMessageH>(life);
+        p.AddBehavior<IRequestHandler<GameChatMarkAsReadR, SingleResponse>, GameChatMarkAsReadH>(life);
     }
 
     /// <summary>

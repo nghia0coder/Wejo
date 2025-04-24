@@ -1,7 +1,6 @@
 ﻿namespace Wejo.Game.Application.Interfaces;
 
 using Common.Domain.Dtos;
-using Domain.Entities;
 using Request;
 
 public interface IGameChatService
@@ -26,7 +25,7 @@ public interface IGameChatService
     /// <param name="limit">Maximum number of messages to return</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of messages matching the criteria</returns>
-    Task<List<GameChatMessage>> GetMessagesAsync(
+    Task<List<GameChatMessageDto>> GetMessagesAsync(
         Guid gameId,
         DateTime? before,
         DateTime? after,

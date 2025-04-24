@@ -8,7 +8,6 @@ using Common.Core.Extensions;
 using Common.Domain.Dtos;
 using Common.Domain.Interfaces;
 using Common.SeedWork;
-using Domain.Entities;
 using Interfaces;
 using Request;
 
@@ -85,7 +84,7 @@ public class GameChatService : BaseH, IGameChatService
 
         var messageDto = new GameChatMessageDto
         {
-            Id = messageId,
+            MessageId = messageId,
             GameId = gameId,
             UserId = user.Id,
             UserName = user.FullName,
@@ -99,7 +98,7 @@ public class GameChatService : BaseH, IGameChatService
     }
 
     /// <inheritdoc/>
-    public async Task<List<GameChatMessage>> GetMessagesAsync(
+    public async Task<List<GameChatMessageDto>> GetMessagesAsync(
         Guid gameId,
         DateTime? before,
         DateTime? after,
@@ -107,7 +106,7 @@ public class GameChatService : BaseH, IGameChatService
         int limit,
         CancellationToken cancellationToken)
     {
-        var messages = new List<GameChatMessage>();
+        var messages = new List<GameChatMessageDto>();
         var endDate = before ?? DateTime.UtcNow;
         var startDate = after ?? endDate.AddMonths(-_config.DefaultHistoryMonths);
         var buckets = DateTimeExtension.GenerateBuckets(startDate, endDate);
@@ -188,7 +187,7 @@ public class GameChatService : BaseH, IGameChatService
             if (before.HasValue)
                 return _statementFactory.CreateSelectMessagesBeforeStatement();
             else if (after.HasValue)
-                return _statementFactory.CreateSelectMessagesAfterStatement();
+                return _statementFactory.CreateSelectMessagesBeforeStatement();
             else
                 return _statementFactory.CreateSelectMessagesBeforeStatement();
         }
@@ -221,11 +220,11 @@ public class GameChatService : BaseH, IGameChatService
         }
     }
 
-    private IEnumerable<GameChatMessage> MapRowsToMessages(RowSet rows, Guid gameId)
+    private IEnumerable<GameChatMessageDto> MapRowsToMessages(RowSet rows, Guid gameId)
     {
         foreach (var row in rows)
         {
-            yield return new GameChatMessage
+            yield return new GameChatMessageDto
             {
                 MessageId = row.GetValue<Guid>("message_id"),
                 GameId = gameId,

@@ -1,25 +1,24 @@
 ﻿using MediatR;
 using Microsoft.EntityFrameworkCore;
 
-namespace Wejo.Game.Application.Queries;
+namespace Wejo.Game.Application.Commands;
 
 using Common.Core.Enums;
 using Common.Core.Extensions;
-using Common.Domain.Dtos;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Dtos;
 using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
+using Infrastructure.MessageQueue;
 using Interfaces;
 using Request;
-using System.Collections.Generic;
 using Validators;
 using static Common.SeedWork.Constants.Error;
 
 /// <summary>
 /// Handler
 /// </summary>
-public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, SingleResponse>
+public class GameChatMarkAsReadH : BaseH, IRequestHandler<GameChatMarkAsReadR, SingleResponse>
 {
     #region -- Methods --
 
@@ -27,9 +26,10 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
     /// Initialize
     /// </summary>
     /// <param name="context">DB context</param>
-    public GameChatGetMessageH(IWejoContext context, IGameChatService gameChatService) : base(context)
+    public GameChatMarkAsReadH(IWejoContext context, IGameChatService gameChatService, IMessageQueue messageQueue) : base(context)
     {
         _gameChatService = gameChatService;
+        _messageQueue = messageQueue;
     }
 
     /// <summary>
@@ -38,12 +38,12 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
     /// <param name="request">Request</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Return the result</returns>
-    public async Task<SingleResponse> Handle(GameChatGetMessageR request, CancellationToken cancellationToken)
+    public async Task<SingleResponse> Handle(GameChatMarkAsReadR request, CancellationToken cancellationToken)
     {
         var res = new SingleResponse();
 
         #region -- Validate on client --
-        var vr = new GameChatGetMessageV().Validate(request);
+        var vr = new GameChatMarkAsReadV().Validate(request);
         if (!vr.IsValid)
         {
             var t = vr.Errors.ToDic();
@@ -74,39 +74,10 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
         }
         #endregion
 
-        var messsages = await _gameChatService.GetMessagesAsync(request.Id, request.Before, request.After, request.FromUser,
-            request.Limit, cancellationToken);
 
-        var readMessages = new List<GameChatMessageDto>();
-        var unreadMessages = new List<GameChatMessageDto>();
+        await _gameChatService.UpdateReadStatusAsync(request.Id, userId, request.LastReadMessageId, request.LastReadTimestamp, cancellationToken);
 
-        foreach (var message in messsages)
-        {
-            if (message.CreatedOn > request.After)
-            {
-                unreadMessages.Add(message);
-            }
-            else
-            {
-                readMessages.Add(message);
-            }
-        }
-
-        var pageInfo = new PageInfo
-        {
-            HasNextPage = messsages.Count == request.Limit,
-            StartCursor = messsages.FirstOrDefault()?.CreatedOn.ToString("o"),
-            EndCursor = messsages.LastOrDefault()?.CreatedOn.ToString("o")
-        };
-
-        var data = new PagedMessagesResponse<GameChatMessageDto>
-        {
-            PageInfo = pageInfo,
-            UnreadMessages = unreadMessages,
-            ReadMessages = readMessages
-        };
-
-        return res.SetSuccess(data);
+        return res.SetSuccess(200);
     }
 
     #endregion
@@ -117,6 +88,11 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
     /// GameChat Service
     /// </summary>
     private readonly IGameChatService _gameChatService;
+
+    /// <summary>
+    /// Message queue
+    /// </summary>
+    private readonly IMessageQueue _messageQueue;
 
     #endregion
 }
