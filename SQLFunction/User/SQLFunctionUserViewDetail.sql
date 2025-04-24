@@ -1,17 +1,7 @@
 CREATE OR REPLACE FUNCTION "identity"."get_user_details"
-("user_id" VARCHAR)
-RETURNS TABLE
-(
-    "id" VARCHAR,
-    "bio" TEXT,
-    "avatar" TEXT,
-    "gender" INT8,
-    "dateofbirth" DATE,          
-    "level" INT8,
-    "fullname" TEXT,             
-    "gamesparticipatedcount" INT8,  
-    "totalplaypal" INT8          
-) AS $BODY$
+("user_id" varchar)
+  RETURNS TABLE
+("id" text, "bio" text, "avatar" text, "gender" int8, "dateofbirth" date, "level" int8, "fullname" text, "gamesparticipatedcount" int8, "totalplaypal" int8) AS $BODY$
 BEGIN
     RETURN QUERY
     SELECT
@@ -44,6 +34,6 @@ BEGIN
         u."Level";
 END;
 $BODY$
-LANGUAGE plpgsql VOLATILE
-COST 100
-ROWS 1000;
+  LANGUAGE plpgsql VOLATILE
+  COST 100
+  ROWS 1000
