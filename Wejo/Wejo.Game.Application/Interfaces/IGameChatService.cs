@@ -40,10 +40,7 @@ public interface IGameChatService
     /// <param name="userIds">List of user IDs</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Dictionary mapping user IDs to their read status</returns>
-    Task<Dictionary<string, (Guid? LastReadMessageId, DateTime? LastReadTimestamp)>> GetReadStatusAsync(
-        Guid gameId,
-        List<string> userIds,
-        CancellationToken cancellationToken);
+    Task<(Guid? LastReadMessageId, DateTime? LastReadTimestamp)> GetReadStatusAsync(Guid gameId, string userId, CancellationToken cancellationToken);
 
     /// <summary>
     /// Updates the read status for a user in a game

@@ -127,6 +127,23 @@ public class GameChatService : BaseH, IGameChatService
         return messages.Count <= limit ? messages : messages.GetRange(0, limit);
     }
 
+    public async Task<(Guid? LastReadMessageId, DateTime? LastReadTimestamp)> GetReadStatusAsync(Guid gameId, string userId, CancellationToken cancellationToken)
+    {
+        var boundStatement = _statementFactory.CreateSelectReadStatusStatement().Bind(gameId, new[] { userId });
+        var rows = await _cassandraSession.ExecuteAsync(boundStatement).ConfigureAwait(false);
+
+        var firstRow = rows.FirstOrDefault();
+        if (firstRow == null)
+        {
+            return (null, null);
+        }
+
+        return (
+            firstRow.GetValue<Guid?>("last_read_message_id"),
+            firstRow.GetValue<DateTime?>("last_read_timestamp")
+        );
+    }
+
     /// <inheritdoc/>
     public async Task<Dictionary<string, (Guid? LastReadMessageId, DateTime? LastReadTimestamp)>> GetReadStatusAsync(
         Guid gameId,

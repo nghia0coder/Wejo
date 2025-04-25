@@ -74,15 +74,20 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
         }
         #endregion
 
-        var messsages = await _gameChatService.GetMessagesAsync(request.Id, request.Before, request.After, request.FromUser,
+        var gameId = request.Id;
+
+        var messsages = await _gameChatService.GetMessagesAsync(gameId, request.Before, request.After, request.FromUser,
             request.Limit, cancellationToken);
+
+        var (lastReadMessageId, lastReadTimestamp) = await _gameChatService.GetReadStatusAsync(gameId, userId, cancellationToken);
+        var lastReadTime = lastReadTimestamp ?? DateTime.UtcNow;
 
         var readMessages = new List<GameChatMessageDto>();
         var unreadMessages = new List<GameChatMessageDto>();
 
         foreach (var message in messsages)
         {
-            if (message.CreatedOn > request.After)
+            if (message.CreatedOn > lastReadTime)
             {
                 unreadMessages.Add(message);
             }
