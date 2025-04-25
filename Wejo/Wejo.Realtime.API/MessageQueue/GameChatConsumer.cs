@@ -27,7 +27,7 @@ public class GameChatConsumer : BackgroundService
     {
         var factory = new ConnectionFactory
         {
-            HostName = "localhost", // Change to localhost if running locally
+            HostName = "rabbitmq", // Change to localhost if running locally
             Port = 5672,
             UserName = "wejo",
             Password = "wejo"
