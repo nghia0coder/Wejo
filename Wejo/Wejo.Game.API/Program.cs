@@ -64,6 +64,10 @@ public class Program
         // GameChat Service
         builder.Services.AddScoped<IGameChatService, GameChatService>();
 
+        // Redis
+        builder.Services.AddRedis(builder.Configuration);
+        builder.Services.AddScoped<IUserCacheService, UserCacheService>();
+
         // Message Queue
         builder.Services.AddSingleton<IMessageQueue, RabbitMQProducer>();
 

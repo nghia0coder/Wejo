@@ -22,4 +22,8 @@
 		<Protobuf Include="Protos\GameParticipants\game_participant.proto" />
 	</ItemGroup>
 
+	<ItemGroup>
+		<Folder Include="Interfaces\" />
+	</ItemGroup>
+
 </Project>

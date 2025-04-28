@@ -12,7 +12,6 @@ using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
 using Interfaces;
 using Request;
-using System.Collections.Generic;
 using Validators;
 using static Common.SeedWork.Constants.Error;
 
@@ -27,9 +26,10 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
     /// Initialize
     /// </summary>
     /// <param name="context">DB context</param>
-    public GameChatGetMessageH(IWejoContext context, IGameChatService gameChatService) : base(context)
+    public GameChatGetMessageH(IWejoContext context, IGameChatService gameChatService, IUserCacheService userCacheService) : base(context)
     {
         _gameChatService = gameChatService;
+        _userCacheService = userCacheService;
     }
 
     /// <summary>
@@ -76,8 +76,17 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
 
         var gameId = request.Id;
 
-        var messsages = await _gameChatService.GetMessagesAsync(gameId, request.Before, request.After, request.FromUser,
+        var messages = await _gameChatService.GetMessagesAsync(gameId, request.Before, request.After, request.FromUser,
             request.Limit, cancellationToken);
+
+        var userIds = messages.Select(m => m.UserId).Distinct().ToList();
+        var users = new Dictionary<string, UserInfoDto>();
+
+        foreach (var uid in userIds)
+        {
+            var userInfo = await _userCacheService.GetUserInfoAsync(uid, cancellationToken);
+            users[uid] = userInfo;
+        }
 
         var (lastReadMessageId, lastReadTimestamp) = await _gameChatService.GetReadStatusAsync(gameId, userId, cancellationToken);
         var lastReadTime = lastReadTimestamp ?? DateTime.UtcNow;
@@ -85,23 +94,34 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
         var readMessages = new List<GameChatMessageDto>();
         var unreadMessages = new List<GameChatMessageDto>();
 
-        foreach (var message in messsages)
+        foreach (var message in messages)
         {
+            var userInfo = users.GetValueOrDefault(message.UserId);
+            var messageDto = new GameChatMessageDto
+            {
+                MessageId = message.MessageId,
+                GameId = message.GameId,
+                UserId = message.UserId,
+                UserName = userInfo?.FullName ?? "Unknown",
+                Avartar = userInfo?.Avartar ?? "default-avatar.png",
+                Message = message.Message,
+                CreatedOn = message.CreatedOn
+            };
             if (message.CreatedOn > lastReadTime)
             {
-                unreadMessages.Add(message);
+                unreadMessages.Add(messageDto);
             }
             else
             {
-                readMessages.Add(message);
+                readMessages.Add(messageDto);
             }
         }
 
         var pageInfo = new PageInfo
         {
-            HasNextPage = messsages.Count == request.Limit,
-            StartCursor = messsages.FirstOrDefault()?.CreatedOn.ToString("o"),
-            EndCursor = messsages.LastOrDefault()?.CreatedOn.ToString("o")
+            HasNextPage = messages.Count == request.Limit,
+            StartCursor = messages.FirstOrDefault()?.CreatedOn.ToString("o"),
+            EndCursor = messages.LastOrDefault()?.CreatedOn.ToString("o")
         };
 
         var data = new PagedMessagesResponse<GameChatMessageDto>
@@ -122,6 +142,11 @@ public class GameChatGetMessageH : BaseH, IRequestHandler<GameChatGetMessageR, S
     /// GameChat Service
     /// </summary>
     private readonly IGameChatService _gameChatService;
+
+    /// <summary>
+    /// User Cached Service
+    /// </summary>
+    private readonly IUserCacheService _userCacheService;
 
     #endregion
 }

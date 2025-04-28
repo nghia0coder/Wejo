@@ -21,3 +21,9 @@ public class UserViewDto : UserDto
 
     public string? LevelName { get; set; }
 }
+
+public class UserInfoDto
+{
+    public string? FullName { get; set; }
+    public string? Avartar { get; set; }
+}
