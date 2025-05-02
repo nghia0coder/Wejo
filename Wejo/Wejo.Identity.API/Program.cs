@@ -57,6 +57,9 @@ public class Program
         // Setting
         builder.Services.AddSingleton<ISetting>(st!);
 
+        // Cassandra
+        builder.Services.AddCassandra(builder.Configuration);
+
         //Azure Blob Storage
         var blobConnString = builder.Configuration.GetSection("AzureBlobStorage:BlobStorageConnectionStrings").Value!;
         builder.Services.AddAzureBlobStorage(blobConnString);

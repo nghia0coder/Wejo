@@ -167,6 +167,7 @@ public class Program
         app.MapGrpcService<GameParticipantServiceImpl>();
         app.MapHub<NotificationHub>("/notificationHub");
         app.MapHub<GameChatHub>("/gamechatHub");
+        app.MapHub<PlaypalHub>("/playpalhub");
 
         app.Run();
     }

@@ -75,6 +75,11 @@ public static class Error
     /// </summary>
     public const string E205 = "User is not a participant of this game";
 
+    /// <summary>
+    /// The user is not yet a friend
+    /// </summary>
+    public const string E206 = "The user is not yet a friend";
+
     #endregion
 
     #region -- E3xx --
