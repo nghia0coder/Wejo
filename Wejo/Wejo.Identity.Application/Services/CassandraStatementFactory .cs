@@ -15,8 +15,8 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     private readonly ISession _cassandraSession;
     private readonly ChatConfig _config;
 
-    private readonly string[] TableName = { "game_chat_messages", "game_chat_messages_by_user" };
-    private const string ReadStatusTableName = "game_chat_read_status";
+    private readonly string[] TableName = { "playpal_conversations, playpal_conversations_by_users" };
+    private const string ReadStatusTableName = "playpal_conversations";
     private static readonly Column[] MessageColumns = [UserPlaypalMessage.CONVERSATION_ID,
                                                        UserPlaypalMessage.MESSAGE_ID,
                                                        UserPlaypalMessage.USER_ID,
@@ -89,16 +89,25 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     }
 
     /// <inheritdoc/>
-    public PreparedStatement CreateSelectReadStatusStatement()
+    public PreparedStatement CreateInsertConversationStatement()
     {
         return _cassandraSession.Prepare(
-            $"SELECT user_id, last_read_message_id, last_read_timestamp FROM {ReadStatusTableName} WHERE game_id = ? AND user_id IN ?");
+            @"INSERT INTO playpal_conversations (conversation_id, user_id_1, user_id_2, created_at, deleted_by_user_1, deleted_by_user_2)
+              VALUES (?, ?, ?, ?, ?, ?)");
     }
 
     /// <inheritdoc/>
-    public PreparedStatement CreateUpdateReadStatusStatement()
+    public PreparedStatement CreateInsertConversationByUserStatement()
     {
         return _cassandraSession.Prepare(
-            $"INSERT INTO {ReadStatusTableName} (game_id, user_id, last_read_message_id, last_read_timestamp) VALUES (?, ?, ?, ?)");
+            -@"INSERT INTO playpal_conversations_by_users (user_id_1, user_id_2, conversation_id, created_at)
+              VALUES (?, ?, ?, ?)");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateSelectConversationStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"SELECT conversation_id, created_at FROM {TableName[1]} WHERE user_id_1 = ? AND user_id_2 = ?");
     }
 }

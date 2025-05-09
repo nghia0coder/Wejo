@@ -68,6 +68,8 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
         }
         #endregion
 
+        var conversationId = Guid.NewGuid();
+
         //await _gameChatService.UpdateReadStatusAsync(request.Id, userId, request.LastReadMessageId, request.LastReadTimestamp, cancellationToken);
 
         return res.SetSuccess(200);

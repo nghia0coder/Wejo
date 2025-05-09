@@ -10,6 +10,7 @@ public interface ICassandraStatementFactory
     PreparedStatement CreateSelectMessagesAfterStatement();
     PreparedStatement CreateSelectMessagesBeforeFromUserStatement();
     PreparedStatement CreateSelectMessagesAfterFromUserStatement();
-    PreparedStatement CreateSelectReadStatusStatement();
-    PreparedStatement CreateUpdateReadStatusStatement();
+    PreparedStatement CreateSelectConversationStatement();
+    PreparedStatement CreateInsertConversationStatement();
+    PreparedStatement CreateInsertConversationByUserStatement();
 }
