@@ -1,10 +1,8 @@
-﻿namespace Wejo.Identity.Application.Request;
+﻿namespace Wejo.Identity.Application.Requests;
 
 using Common.Core.Requests;
 public class UserChatSendMessageR : IdBaseR
 {
-    public Guid? ConversationId { get; set; }
-
     public string? ReceiverId { get; set; }
 
     public string? Message { get; set; }

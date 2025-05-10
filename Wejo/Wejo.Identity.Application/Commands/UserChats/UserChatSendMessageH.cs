@@ -8,7 +8,8 @@ using Common.Domain.Interfaces;
 using Common.SeedWork.Dtos;
 using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
-using Request;
+using Interfaces;
+using Requests;
 using Validators;
 using static Common.SeedWork.Constants.Error;
 
@@ -23,8 +24,9 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
     /// Initialize
     /// </summary>
     /// <param name="context">DB context</param>
-    public UserChatSendMessageH(IWejoContext context) : base(context)
+    public UserChatSendMessageH(IWejoContext context, IUserChatService userChatService) : base(context)
     {
+        _userChatService = userChatService;
     }
 
     /// <summary>
@@ -51,6 +53,11 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
         {
             return res.SetError(nameof(E119), E119);
         }
+        var reveiverId = request.ReceiverId;
+        if (reveiverId == null)
+        {
+            return res.SetError(nameof(E119), E119);
+        }
 
         #region -- Validate on server --
         var hasUser = await _context.Users.AnyAsync(p => p.Id == userId, cancellationToken);
@@ -64,13 +71,13 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
         if (!hasPlaypal)
         {
             var t = new List<DicDto> { new() { Key = nameof(request.Id).ToCamelCase(), Value = request.Id } };
-            return res.SetErrorData(nameof(E206), E206, t);
+            return res.SetErrorData(nameof(E206), E206, null);
         }
         #endregion
 
-        var conversationId = Guid.NewGuid();
+        var conversationId = await _userChatService.GetConversationAsync(userId, reveiverId, cancellationToken);
 
-        //await _gameChatService.UpdateReadStatusAsync(request.Id, userId, request.LastReadMessageId, request.LastReadTimestamp, cancellationToken);
+        var message = await _userChatService.SendMessageAsync(conversationId, request, cancellationToken);
 
         return res.SetSuccess(200);
     }
@@ -78,6 +85,8 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
     #endregion
 
     #region -- Fields --
+
+    private readonly IUserChatService _userChatService;
 
     #endregion
 }

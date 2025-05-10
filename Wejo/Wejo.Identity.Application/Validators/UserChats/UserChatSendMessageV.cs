@@ -2,7 +2,7 @@
 
 namespace Wejo.Identity.Application.Validators;
 
-using Request;
+using Requests;
 
 public class UserChatSendMessageV : AbstractValidator<UserChatSendMessageR>
 {

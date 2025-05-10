@@ -60,6 +60,8 @@ public class Program
         // Cassandra
         builder.Services.AddCassandra(builder.Configuration);
 
+        builder.Services.AddScoped<IUserChatService, UserChatService>();
+
         //Azure Blob Storage
         var blobConnString = builder.Configuration.GetSection("AzureBlobStorage:BlobStorageConnectionStrings").Value!;
         builder.Services.AddAzureBlobStorage(blobConnString);

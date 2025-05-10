@@ -1,7 +1,7 @@
 ﻿namespace Wejo.Identity.Application.Interfaces;
 
 using Common.Domain.Dtos;
-using Request;
+using Requests;
 
 public interface IUserChatService
 {
@@ -13,7 +13,7 @@ public interface IUserChatService
     /// <param name="request">Request</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>List of messages matching the criteria</returns>
-    Task<UserChatMessageDto> SendMessageAsync(Guid UserId, string userId, UserChatSendMessageR request, CancellationToken cancellationToken);
+    Task<UserChatMessageDto> SendMessageAsync(Guid conversationId, UserChatSendMessageR request, CancellationToken cancellationToken);
 
     /// <summary>
     /// Gets conversation messages between two users
@@ -22,7 +22,7 @@ public interface IUserChatService
     /// <param name="userId2">User identifier</param>
     /// <param name="cancellationToken">Cancellation token</param>
     /// <returns>Conversation infomation</returns>
-    Task<Conversation> GetConversationAsync(string userId1, string userId2, CancellationToken cancellationToken);
+    Task<Guid> GetConversationAsync(string userId1, string userId2, CancellationToken cancellationToken);
 
     ///// <summary>
     ///// Gets messages based on specified filters

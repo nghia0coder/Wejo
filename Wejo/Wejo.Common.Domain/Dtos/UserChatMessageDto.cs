@@ -4,7 +4,8 @@ using SeedWork.Dtos;
 
 public class UserChatMessageDto : MessageDto
 {
-    public string UserId { get; set; } = null!;
+    public Guid ConversationId { get; set; }
+    public string SenderId { get; set; } = null!;
     public string UserName { get; set; } = null!;
     public string Avartar { get; set; } = null!;
 }

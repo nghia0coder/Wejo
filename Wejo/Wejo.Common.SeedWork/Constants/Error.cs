@@ -46,6 +46,11 @@ public static class Error
     /// </summary>
     public const string E119 = "User not found";
 
+    /// <summary>
+    /// Receiver not found
+    /// </summary>
+    public const string E120 = "Receiver not found";
+
     #endregion
 
     #region -- E2xx --

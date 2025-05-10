@@ -15,13 +15,12 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     private readonly ISession _cassandraSession;
     private readonly ChatConfig _config;
 
-    private readonly string[] TableName = { "playpal_conversations, playpal_conversations_by_users" };
-    private const string ReadStatusTableName = "playpal_conversations";
+    private readonly string[] TableName = { "playpal_conversations", "playpal_conversations_by_users", "playpal_messages" };
     private static readonly Column[] MessageColumns = [UserPlaypalMessage.CONVERSATION_ID,
+                                                       UserPlaypalMessage.CREATED_ON,
                                                        UserPlaypalMessage.MESSAGE_ID,
-                                                       UserPlaypalMessage.USER_ID,
                                                        UserPlaypalMessage.MESSAGE,
-                                                       UserPlaypalMessage.CREATED_ON];
+                                                       UserPlaypalMessage.SENDER_ID];
 
     /// <summary>
     /// Initializes a new instance of the CassandraStatementFactory
@@ -38,7 +37,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     public PreparedStatement CreateInsertMessageStatement()
     {
         var insertQuery = new Insert().Keyspace("wejo")
-            .Table(TableName[0])
+            .Table(TableName[2])
             .TTL()
             .InsertColumns(MessageColumns)
             .ToString();
@@ -100,7 +99,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     public PreparedStatement CreateInsertConversationByUserStatement()
     {
         return _cassandraSession.Prepare(
-            -@"INSERT INTO playpal_conversations_by_users (user_id_1, user_id_2, conversation_id, created_at)
+            @"INSERT INTO playpal_conversations_by_users (user_id_1, user_id_2, conversation_id, created_at)
               VALUES (?, ?, ?, ?)");
     }
 

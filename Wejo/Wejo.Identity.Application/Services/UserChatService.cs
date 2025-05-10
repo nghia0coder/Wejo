@@ -9,7 +9,7 @@ using Common.Domain.Dtos;
 using Common.Domain.Interfaces;
 using Common.SeedWork;
 using Interfaces;
-using Request;
+using Requests;
 
 /// <summary>
 /// Implementation
@@ -47,56 +47,43 @@ public class UserChatService : BaseH, IUserChatService
     /// <summary>
     /// Handle
     /// </summary>
-    public async Task<UserChatMessageDto> SendMessageAsync(Guid UserId, string userId, UserChatSendMessageR request, CancellationToken cancellationToken)
+    public async Task<UserChatMessageDto> SendMessageAsync(Guid conversationId, UserChatSendMessageR request, CancellationToken cancellationToken)
     {
         var messageId = Guid.NewGuid();
         var createdOn = DateTime.UtcNow;
-        var bucket = int.Parse(createdOn.ToString("yyyyMM")); // E.g., 202504
 
         var batch = new BatchStatement();
 
         var insertMessageStatement = _statementFactory.CreateInsertMessageStatement();
         var boundStatement = insertMessageStatement.Bind(
-            UserId,
-            bucket,
+            conversationId,
+            createdOn,
             messageId,
-            userId,
             request.Message,
-            createdOn
+            request.UserId
         );
         batch.Add(boundStatement);
-
-        var insertMessageByUserStatement = _statementFactory.CreateInsertMessageByUserStatement();
-        var boundByUserStatement = insertMessageByUserStatement.Bind(
-            UserId,
-            bucket,
-            messageId,
-            userId,
-            request.Message,
-            createdOn
-        );
-        batch.Add(boundByUserStatement);
-
         var user = await _context.Users
-            .Where(u => u.Id == userId)
+            .Where(u => u.Id == request.UserId)
             .Select(u => new { u.Id, FullName = u.FirstName + " " + u.LastName })
             .FirstAsync(cancellationToken);
 
+        await _cassandraSession.ExecuteAsync(batch).ConfigureAwait(false);
+
         var messageDto = new UserChatMessageDto
         {
+            ConversationId = conversationId,
+            CreatedOn = createdOn,
             MessageId = messageId,
-            UserId = user.Id,
-            UserName = user.FullName,
             Message = request.Message,
-            CreatedOn = createdOn
+            SenderId = user.Id,
+            UserName = user.FullName,
         };
-
-        await _cassandraSession.ExecuteAsync(batch).ConfigureAwait(false);
 
         return messageDto;
     }
 
-    public async Task<Conversation> GetConversationAsync(string user1, string user2, CancellationToken cancellationToken)
+    public async Task<Guid> GetConversationAsync(string user1, string user2, CancellationToken cancellationToken)
     {
         var (userId1, userId2) = SortUserIds(user1, user2);
 
@@ -111,24 +98,10 @@ public class UserChatService : BaseH, IUserChatService
         }
 
         var conversationId = row.GetValue<Guid>("conversation_id");
-        var conversationQuery = @"
-            SELECT user_id_1, user_id_2, created_at, deleted_by_user_1, deleted_by_user_2
-            FROM playpal_conversations
-            WHERE conversation_id = ?";
-        var conversationStatement = new SimpleStatement(conversationQuery, conversationId);
-        var conversationRow = _cassandraSession.ExecuteAsync(conversationStatement).ConfigureAwait(false)
-                                                                                    .GetAwaiter().GetResult().FirstOrDefault();
-
-        if (conversationRow == null)
-        {
-            //Xử lý trường hợp không tìm thấy
-            return await CreateConversationAsync(user1, user2, cancellationToken);
-        }
-
-        return MapRowToConversation(conversationRow);
+        return conversationId;
     }
 
-    public async Task<Conversation> CreateConversationAsync(string userId1, string userId2, CancellationToken cancellationToken)
+    public async Task<Guid> CreateConversationAsync(string userId1, string userId2, CancellationToken cancellationToken)
     {
         var (userId1Sorted, userId2Sorted) = SortUserIds(userId1, userId2);
 
@@ -164,7 +137,7 @@ public class UserChatService : BaseH, IUserChatService
             createdAt);
         await _cassandraSession.ExecuteAsync(conversationByUsersStatement).ConfigureAwait(false);
 
-        return conversation;
+        return conversationId;
     }
 
     /// <inheritdoc/>
@@ -265,7 +238,7 @@ public class UserChatService : BaseH, IUserChatService
             yield return new UserChatMessageDto
             {
                 MessageId = row.GetValue<Guid>("message_id"),
-                UserId = row.GetValue<string>("user_id"),
+                SenderId = row.GetValue<string>("sender_idc   "),
                 Message = row.GetValue<string>("message"),
                 CreatedOn = row.GetValue<DateTime>("created_on")
             };
