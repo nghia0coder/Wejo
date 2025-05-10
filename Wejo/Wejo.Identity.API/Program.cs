@@ -11,6 +11,7 @@ using Common.Core.Extensions;
 using Common.Domain.Database;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Extensions;
+using Infrastructure.MessageQueue;
 using static Common.SeedWork.Constants.Setting;
 
 /// <summary>
@@ -61,6 +62,9 @@ public class Program
         builder.Services.AddCassandra(builder.Configuration);
 
         builder.Services.AddScoped<IUserChatService, UserChatService>();
+
+        // Message Queue
+        builder.Services.AddSingleton<IMessageQueue, RabbitMQProducer>();
 
         //Azure Blob Storage
         var blobConnString = builder.Configuration.GetSection("AzureBlobStorage:BlobStorageConnectionStrings").Value!;

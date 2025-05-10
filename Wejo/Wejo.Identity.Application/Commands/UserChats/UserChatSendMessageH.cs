@@ -11,6 +11,8 @@ using Common.SeedWork.Responses;
 using Interfaces;
 using Requests;
 using Validators;
+using Wejo.Common.Core.Constants;
+using Wejo.Identity.Infrastructure.MessageQueue;
 using static Common.SeedWork.Constants.Error;
 
 /// <summary>
@@ -24,9 +26,10 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
     /// Initialize
     /// </summary>
     /// <param name="context">DB context</param>
-    public UserChatSendMessageH(IWejoContext context, IUserChatService userChatService) : base(context)
+    public UserChatSendMessageH(IWejoContext context, IUserChatService userChatService, IMessageQueue messageQueue) : base(context)
     {
         _userChatService = userChatService;
+        _messageQueue = messageQueue;
     }
 
     /// <summary>
@@ -77,9 +80,11 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
 
         var conversationId = await _userChatService.GetConversationAsync(userId, reveiverId, cancellationToken);
 
-        var message = await _userChatService.SendMessageAsync(conversationId, request, cancellationToken);
+        var data = await _userChatService.SendMessageAsync(conversationId, request, cancellationToken);
 
-        return res.SetSuccess(200);
+        await _messageQueue.PublishAsync(QueueName.PlaypalChatMessage, new { Id = conversationId.ToString(), Message = data });
+
+        return res.SetSuccess(data);
     }
 
     #endregion
@@ -87,6 +92,11 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
     #region -- Fields --
 
     private readonly IUserChatService _userChatService;
+
+    /// <summary>
+    /// Message queue
+    /// </summary>
+    private readonly IMessageQueue _messageQueue;
 
     #endregion
 }

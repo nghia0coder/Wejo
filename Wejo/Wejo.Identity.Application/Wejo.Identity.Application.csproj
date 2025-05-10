@@ -19,6 +19,7 @@
 	<ItemGroup>
 		<ProjectReference Include="..\Wejo.Common.Core\Wejo.Common.Core.csproj" />
 		<ProjectReference Include="..\Wejo.Common.Domain\Wejo.Common.Domain.csproj" />
+		<ProjectReference Include="..\Wejo.Identity.Infrastructure\Wejo.Identity.Infrastructure.csproj" />
 	</ItemGroup>
 
 </Project>
