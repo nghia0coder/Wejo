@@ -5,7 +5,7 @@ namespace Wejo.Realtime.API.Hubs;
 using Common.Core.Requests;
 
 //[Authorize]
-public sealed class PlaypalHub : Hub
+public sealed class PlaypalChatHub : Hub
 {
     #region -- Overrides --
 
@@ -42,7 +42,7 @@ public sealed class PlaypalHub : Hub
     /// <summary>
     /// Initialize
     /// </summary>
-    public PlaypalHub() { }
+    public PlaypalChatHub() { }
 
     public async Task JoinGroup(string group)
     {

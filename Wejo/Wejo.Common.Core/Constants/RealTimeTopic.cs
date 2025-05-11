@@ -13,4 +13,10 @@ public static class RealTimeTopic
     public const string ReceiveGameMessage = "ReceiveGameMessage";
 
     #endregion
+
+    #region Playpal
+
+    public const string ReceivePlaypalMessage = "ReceivePlaypalMessage";
+
+    #endregion
 }

@@ -3,16 +3,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace Wejo.Identity.Application.Commands;
 
+using Common.Core.Constants;
 using Common.Core.Extensions;
 using Common.Domain.Interfaces;
 using Common.SeedWork.Dtos;
 using Common.SeedWork.Extensions;
 using Common.SeedWork.Responses;
+using Infrastructure.MessageQueue;
 using Interfaces;
 using Requests;
 using Validators;
-using Wejo.Common.Core.Constants;
-using Wejo.Identity.Infrastructure.MessageQueue;
 using static Common.SeedWork.Constants.Error;
 
 /// <summary>
@@ -82,7 +82,7 @@ public class UserChatSendMessageH : BaseH, IRequestHandler<UserChatSendMessageR,
 
         var data = await _userChatService.SendMessageAsync(conversationId, request, cancellationToken);
 
-        await _messageQueue.PublishAsync(QueueName.PlaypalChatMessage, new { Id = conversationId.ToString(), Message = data });
+        await _messageQueue.PublishAsync(QueueName.PlaypalChatMessage, new { ReveiverId = reveiverId.ToString(), Message = data });
 
         return res.SetSuccess(data);
     }
