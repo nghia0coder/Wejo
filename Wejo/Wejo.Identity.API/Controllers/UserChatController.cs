@@ -47,20 +47,20 @@ public class UserChatController : BaseController
         return Ok(response);
     }
 
-    ///// <summary>
-    ///// Get message in User room.
-    ///// </summary>
-    ///// <param name="request">Get Message to User room</param>
-    ///// <returns>Message in the room</returns>
-    //[HttpPatch("mark-as-read")]
-    //[ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
-    //public async Task<IActionResult> MarkAsRead([FromBody] UserChatMarkAsReadR request)
-    //{
-    //    request.Analyze(HttpContext);
+    /// <summary>
+    /// Get message in User room.
+    /// </summary>
+    /// <param name="request">Get Message to User room</param>
+    /// <returns>Message in the room</returns>
+    [HttpPatch("mark-as-read")]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> MarkAsRead([FromBody] UserChatMarkAsReadR request)
+    {
+        request.Analyze(HttpContext);
 
-    //    var response = await _mediator.Send(request);
-    //    response.ReturnUrl = AbsoluteUri;
+        var response = await _mediator.Send(request);
+        response.ReturnUrl = AbsoluteUri;
 
-    //    return Ok(response);
-    //}
+        return Ok(response);
+    }
 }

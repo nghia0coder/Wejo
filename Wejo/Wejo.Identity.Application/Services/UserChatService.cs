@@ -181,6 +181,24 @@ public class UserChatService : BaseH, IUserChatService
         );
     }
 
+    /// <inheritdoc/>
+    public async Task UpdateReadStatusAsync(
+        Guid converstationId,
+        string userId,
+        Guid lastReadMessageId,
+        DateTime lastReadTimestamp,
+        CancellationToken cancellationToken)
+    {
+        var boundStatement = _statementFactory.CreateUpdateReadStatusStatement().Bind(
+            converstationId,
+            userId,
+            lastReadMessageId,
+            lastReadTimestamp
+        );
+
+        await _cassandraSession.ExecuteAsync(boundStatement).ConfigureAwait(false);
+    }
+
     #endregion
 
     #region Private Helper Methods

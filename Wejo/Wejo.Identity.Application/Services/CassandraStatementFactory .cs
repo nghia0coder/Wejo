@@ -122,6 +122,6 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     public PreparedStatement CreateUpdateReadStatusStatement()
     {
         return _cassandraSession.Prepare(
-            $"INSERT INTO {TableName[3]} (game_id, user_id, last_read_message_id, last_read_timestamp) VALUES (?, ?, ?, ?)");
+            $"INSERT INTO {TableName[3]} (conversation_id, user_id, last_read_message_id, last_read_timestamp) VALUES (?, ?, ?, ?)");
     }
 }

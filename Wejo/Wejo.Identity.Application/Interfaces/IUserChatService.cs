@@ -51,18 +51,18 @@ public interface IUserChatService
     /// <returns>Dictionary mapping user IDs to their read status</returns>
     Task<(Guid? LastReadMessageId, DateTime? LastReadTimestamp)> GetReadStatusAsync(Guid UserId, string userId, CancellationToken cancellationToken);
 
-    ///// <summary>
-    ///// Updates the read status for a user in a User
-    ///// </summary>
-    ///// <param name="UserId">User identifier</param>
-    ///// <param name="userId">User identifier</param>
-    ///// <param name="lastReadMessageId">Last read message ID</param>
-    ///// <param name="lastReadTimestamp">Timestamp of the last read</param>
-    ///// <param name="cancellationToken">Cancellation token</param>
-    //Task UpdateReadStatusAsync(
-    //    Guid UserId,
-    //    string userId,
-    //    Guid lastReadMessageId,
-    //    DateTime lastReadTimestamp,
-    //    CancellationToken cancellationToken);
+    /// <summary>
+    /// Updates the read status for a user in a User
+    /// </summary>
+    /// <param name="UserId">User identifier</param>
+    /// <param name="userId">User identifier</param>
+    /// <param name="lastReadMessageId">Last read message ID</param>
+    /// <param name="lastReadTimestamp">Timestamp of the last read</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    Task UpdateReadStatusAsync(
+        Guid UserId,
+        string userId,
+        Guid lastReadMessageId,
+        DateTime lastReadTimestamp,
+        CancellationToken cancellationToken);
 }

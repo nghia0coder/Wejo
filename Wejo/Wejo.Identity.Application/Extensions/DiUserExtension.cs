@@ -35,6 +35,7 @@ public static class DiUserExtension
     public static void AddUserCommands(this MediatRServiceConfiguration p, ServiceLifetime life = ServiceLifetime.Scoped)
     {
         p.AddBehavior<IRequestHandler<UserChatSendMessageR, SingleResponse>, UserChatSendMessageH>(life);
+        p.AddBehavior<IRequestHandler<UserChatMarkAsReadR, SingleResponse>, UserChatMarkAsReadH>(life);
         p.AddBehavior<IRequestHandler<UserSendOtpR, SingleResponse>, UserSendOtpH>(life);
         p.AddBehavior<IRequestHandler<UserVerifyOtpR, SingleResponse>, UserVerifyOtpH>(life);
         p.AddBehavior<IRequestHandler<UserUpdateR, SingleResponse>, UserUpdateH>(life);
