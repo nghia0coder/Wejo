@@ -7,6 +7,7 @@ using Commands;
 using Common.SeedWork.Responses;
 using Queries;
 using Requests;
+using Wejo.Identity.Application.Request;
 
 /// <summary>
 /// DI extension
@@ -51,6 +52,7 @@ public static class DiUserExtension
         p.AddBehavior<IRequestHandler<UserPlaypalViewR, SingleResponse>, UserPlaypalViewH>(life);
         p.AddBehavior<IRequestHandler<UserViewR, SingleResponse>, UserViewH>(life);
         p.AddBehavior<IRequestHandler<UserCheckExistR, SingleResponse>, UserCheckExistH>(life);
+        p.AddBehavior<IRequestHandler<UserChatGetMessageR, SingleResponse>, UserChatGetMessageH>(life);
     }
 
     #endregion

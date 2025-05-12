@@ -15,7 +15,8 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     private readonly ISession _cassandraSession;
     private readonly ChatConfig _config;
 
-    private readonly string[] TableName = { "playpal_conversations", "playpal_conversations_by_users", "playpal_messages" };
+    private readonly string[] TableName = { "playpal_conversations", "playpal_conversations_by_users",
+                                            "playpal_messages", "playpal_read_status" };
     private static readonly Column[] MessageColumns = [UserPlaypalMessage.CONVERSATION_ID,
                                                        UserPlaypalMessage.CREATED_ON,
                                                        UserPlaypalMessage.MESSAGE_ID,
@@ -75,8 +76,8 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     public PreparedStatement CreateSelectMessagesBeforeFromUserStatement()
     {
         return _cassandraSession.Prepare(
-            $"SELECT message_id, user_id, message, created_on " +
-            $"FROM {TableName[1]} WHERE game_id = ? AND bucket = ? AND created_on < ? AND user_id = ? LIMIT ?");
+            $"SELECT conversation_id, created_on, message_id, message, sender_id " +
+            $"FROM {TableName[2]} WHERE conversation_id = ? AND created_on < ? LIMIT ?");
     }
 
     /// <inheritdoc/>
@@ -84,7 +85,7 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     {
         return _cassandraSession.Prepare(
             $"SELECT message_id, user_id, message, created_on " +
-            $"FROM {TableName[1]} WHERE game_id = ? AND bucket = ? AND created_on > ? AND user_id = ? LIMIT ?");
+            $"FROM {TableName[2]} WHERE game_id = ? AND bucket = ? AND created_on > ? AND user_id = ? LIMIT ?");
     }
 
     /// <inheritdoc/>
@@ -108,5 +109,19 @@ public class CassandraStatementFactory : ICassandraStatementFactory
     {
         return _cassandraSession.Prepare(
             $"SELECT conversation_id, created_at FROM {TableName[1]} WHERE user_id_1 = ? AND user_id_2 = ?");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateSelectReadStatusStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"SELECT conversation_id, user_id, last_read_message_id, last_read_timestamp FROM {TableName[3]} WHERE conversation_id = ? AND user_id IN ?");
+    }
+
+    /// <inheritdoc/>
+    public PreparedStatement CreateUpdateReadStatusStatement()
+    {
+        return _cassandraSession.Prepare(
+            $"INSERT INTO {TableName[3]} (game_id, user_id, last_read_message_id, last_read_timestamp) VALUES (?, ?, ?, ?)");
     }
 }

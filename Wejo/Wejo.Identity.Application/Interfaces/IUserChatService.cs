@@ -24,32 +24,32 @@ public interface IUserChatService
     /// <returns>Conversation infomation</returns>
     Task<Guid> GetConversationAsync(string userId1, string userId2, CancellationToken cancellationToken);
 
-    ///// <summary>
-    ///// Gets messages based on specified filters
-    ///// </summary>
-    ///// <param name="UserId">User identifier</param>
-    ///// <param name="before">Get messages before this date</param>
-    ///// <param name="after">Get messages after this date</param>
-    ///// <param name="fromUserId">Filter by user ID</param>
-    ///// <param name="limit">Maximum number of messages to return</param>
-    ///// <param name="cancellationToken">Cancellation token</param>
-    ///// <returns>List of messages matching the criteria</returns>
-    //Task<List<UserChatMessageDto>> GetMessagesAsync(
-    //    Guid UserId,
-    //    DateTime? before,
-    //    DateTime? after,
-    //    string? fromUserId,
-    //    int limit,
-    //    CancellationToken cancellationToken);
+    /// <summary>
+    /// Gets messages based on specified filters
+    /// </summary>
+    /// <param name="converstationId">Conversation identifier</param>
+    /// <param name="before">Get messages before this date</param>
+    /// <param name="after">Get messages after this date</param>
+    /// <param name="fromUserId">Filter by user ID</param>
+    /// <param name="limit">Maximum number of messages to return</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>List of messages matching the criteria</returns>
+    Task<List<UserChatMessageDto>> GetMessagesAsync(
+        Guid converstationId,
+        DateTime? before,
+        DateTime? after,
+        string? fromUserId,
+        int limit,
+        CancellationToken cancellationToken);
 
-    ///// <summary>
-    ///// Gets read status for specified users in a User
-    ///// </summary>
-    ///// <param name="UserId">User identifier</param>
-    ///// <param name="userIds">List of user IDs</param>
-    ///// <param name="cancellationToken">Cancellation token</param>
-    ///// <returns>Dictionary mapping user IDs to their read status</returns>
-    //Task<(Guid? LastReadMessageId, DateTime? LastReadTimestamp)> GetReadStatusAsync(Guid UserId, string userId, CancellationToken cancellationToken);
+    /// <summary>
+    /// Gets read status for specified users in a User
+    /// </summary>
+    /// <param name="UserId">User identifier</param>
+    /// <param name="userIds">List of user IDs</param>
+    /// <param name="cancellationToken">Cancellation token</param>
+    /// <returns>Dictionary mapping user IDs to their read status</returns>
+    Task<(Guid? LastReadMessageId, DateTime? LastReadTimestamp)> GetReadStatusAsync(Guid UserId, string userId, CancellationToken cancellationToken);
 
     ///// <summary>
     ///// Updates the read status for a user in a User

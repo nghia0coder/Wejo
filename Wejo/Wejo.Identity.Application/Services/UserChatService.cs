@@ -142,7 +142,7 @@ public class UserChatService : BaseH, IUserChatService
 
     /// <inheritdoc/>
     public async Task<List<UserChatMessageDto>> GetMessagesAsync(
-        Guid UserId,
+        Guid conversationId,
         DateTime? before,
         DateTime? after,
         string? fromUserId,
@@ -154,23 +154,32 @@ public class UserChatService : BaseH, IUserChatService
         var startDate = after ?? endDate.AddMonths(-_config.DefaultHistoryMonths);
         var buckets = DateTimeExtension.GenerateBuckets(startDate, endDate);
 
-        foreach (var bucket in buckets)
-        {
-            var statement = GetAppropriateStatement(before, after, fromUserId);
-            var bindParams = CreateBindParameters(UserId, bucket, before, after, fromUserId, limit);
-            var boundStatement = statement.Bind(bindParams);
+        var statement = GetAppropriateStatement(before, after, fromUserId);
+        var bindParams = CreateBindParameters(conversationId, before, after, limit);
+        var boundStatement = statement.Bind(bindParams);
 
-            var rows = await _cassandraSession.ExecuteAsync(boundStatement);
-            messages.AddRange(MapRowsToMessages(rows, UserId));
-
-            if (messages.Count >= limit)
-                break;
-        }
+        var rows = await _cassandraSession.ExecuteAsync(boundStatement);
+        messages.AddRange(MapRowsToMessages(rows, conversationId));
 
         return messages.Count <= limit ? messages : messages.GetRange(0, limit);
     }
 
+    public async Task<(Guid? LastReadMessageId, DateTime? LastReadTimestamp)> GetReadStatusAsync(Guid conversationId, string userId, CancellationToken cancellationToken)
+    {
+        var boundStatement = _statementFactory.CreateSelectReadStatusStatement().Bind(conversationId, new[] { userId });
+        var rows = await _cassandraSession.ExecuteAsync(boundStatement).ConfigureAwait(false);
 
+        var firstRow = rows.FirstOrDefault();
+        if (firstRow == null)
+        {
+            return (null, null);
+        }
+
+        return (
+            firstRow.GetValue<Guid?>("last_read_message_id"),
+            firstRow.GetValue<DateTime?>("last_read_timestamp")
+        );
+    }
 
     #endregion
 
@@ -198,30 +207,28 @@ public class UserChatService : BaseH, IUserChatService
         }
     }
     private object[] CreateBindParameters(
-        Guid UserId,
-        int bucket,
+        Guid? conversationId,
         DateTime? before,
         DateTime? after,
-        string? fromUserId,
         int limit)
     {
-        if (fromUserId != null)
+        if (conversationId != null)
         {
             if (before.HasValue)
-                return new object[] { UserId, bucket, before.Value, fromUserId, limit };
+                return new object[] { conversationId, before.Value, limit };
             else if (after.HasValue)
-                return new object[] { UserId, bucket, after.Value, fromUserId, limit };
+                return new object[] { conversationId, after.Value, limit };
             else
-                return new object[] { UserId, bucket, DateTime.UtcNow, fromUserId, limit };
+                return new object[] { conversationId, DateTime.UtcNow, limit };
         }
         else
         {
             if (before.HasValue)
-                return new object[] { UserId, bucket, before.Value, limit };
+                return new object[] { conversationId, before.Value, limit };
             else if (after.HasValue)
-                return new object[] { UserId, bucket, after.Value, limit };
+                return new object[] { conversationId, after.Value, limit };
             else
-                return new object[] { UserId, bucket, DateTime.UtcNow, limit };
+                return new object[] { conversationId, DateTime.UtcNow, limit };
         }
     }
 
@@ -238,7 +245,7 @@ public class UserChatService : BaseH, IUserChatService
             yield return new UserChatMessageDto
             {
                 MessageId = row.GetValue<Guid>("message_id"),
-                SenderId = row.GetValue<string>("sender_idc   "),
+                SenderId = row.GetValue<string>("sender_id"),
                 Message = row.GetValue<string>("message"),
                 CreatedOn = row.GetValue<DateTime>("created_on")
             };

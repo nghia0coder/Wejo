@@ -63,6 +63,10 @@ public class Program
 
         builder.Services.AddScoped<IUserChatService, UserChatService>();
 
+        // Redis
+        builder.Services.AddRedis(builder.Configuration);
+        builder.Services.AddScoped<IUserCacheService, UserCacheService>();
+
         // Message Queue
         builder.Services.AddSingleton<IMessageQueue, RabbitMQProducer>();
 

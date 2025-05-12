@@ -4,6 +4,7 @@ using System.Net;
 
 namespace Wejo.Identity.API.Controllers;
 
+using Application.Request;
 using Application.Requests;
 using Common.Core.Controllers;
 using Common.SeedWork.Responses;
@@ -29,22 +30,22 @@ public class UserChatController : BaseController
         return Ok(response);
     }
 
-    ///// <summary>
-    ///// Get message in User room.
-    ///// </summary>
-    ///// <param name="request">Get Message to User room</param>
-    ///// <returns>Message in the room</returns>
-    //[HttpGet("get-messages")]
-    //[ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
-    //public async Task<IActionResult> GetMessage([FromQuery] UserChatGetMessageR request)
-    //{
-    //    request.Analyze(HttpContext);
+    /// <summary>
+    /// Get message in User room.
+    /// </summary>
+    /// <param name="request">Get Message to User room</param>
+    /// <returns>Message in the room</returns>
+    [HttpGet("get-messages")]
+    [ProducesResponseType(typeof(SingleResponse), (int)HttpStatusCode.OK)]
+    public async Task<IActionResult> GetMessage([FromQuery] UserChatGetMessageR request)
+    {
+        request.Analyze(HttpContext);
 
-    //    var response = await _mediator.Send(request);
-    //    response.ReturnUrl = AbsoluteUri;
+        var response = await _mediator.Send(request);
+        response.ReturnUrl = AbsoluteUri;
 
-    //    return Ok(response);
-    //}
+        return Ok(response);
+    }
 
     ///// <summary>
     ///// Get message in User room.

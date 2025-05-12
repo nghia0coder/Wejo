@@ -13,4 +13,6 @@ public interface ICassandraStatementFactory
     PreparedStatement CreateSelectConversationStatement();
     PreparedStatement CreateInsertConversationStatement();
     PreparedStatement CreateInsertConversationByUserStatement();
+    PreparedStatement CreateSelectReadStatusStatement();
+    PreparedStatement CreateUpdateReadStatusStatement();
 }
