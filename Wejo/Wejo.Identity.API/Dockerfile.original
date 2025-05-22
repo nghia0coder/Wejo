@@ -1,0 +1,29 @@
+﻿FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS base
+WORKDIR /app
+EXPOSE 80
+EXPOSE 443
+RUN addgroup --system appgroup && adduser --system --ingroup appgroup app
+USER app
+
+FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+ARG BUILD_CONFIGURATION=Release
+WORKDIR /src
+# Copy .csproj files relative to the root (Wejo/)
+COPY ["../Wejo.Identity.API/Wejo.Identity.API.csproj", "Wejo.Identity.API/"]
+COPY ["../Wejo.Common.Core/Wejo.Common.Core.csproj", "Wejo.Common.Core/"]
+COPY ["../Wejo.Common.SeedWork/Wejo.Common.SeedWork.csproj", "Wejo.Common.SeedWork/"]
+COPY ["../Wejo.Identity.Application/Wejo.Identity.Application.csproj", "Wejo.Identity.Application/"]
+COPY ["../Wejo.Common.Domain/Wejo.Common.Domain.csproj", "Wejo.Common.Domain/"]
+RUN dotnet restore "Wejo.Identity.API/Wejo.Identity.API.csproj"
+COPY ["../Wejo.Identity.API/", "Wejo.Identity.API/"]
+COPY ["../Wejo.Common.Core/", "Wejo.Common.Core/"]
+COPY ["../Wejo.Common.SeedWork/", "Wejo.Common.SeedWork/"]
+COPY ["../Wejo.Identity.Application/", "Wejo.Identity.Application/"]
+COPY ["../Wejo.Common.Domain/", "Wejo.Common.Domain/"]
+WORKDIR "/src/Wejo.Identity.API"
+RUN dotnet publish "Wejo.Identity.API.csproj" -c $BUILD_CONFIGURATION -o /app/publish /p:UseAppHost=false
+
+FROM base AS final
+WORKDIR /app
+COPY --from=build /app/publish .
+ENTRYPOINT ["dotnet", "Wejo.Identity.API.dll"]

@@ -1,0 +1,192 @@
+pipeline {
+    agent any
+    environment {
+        PAT_CREDENTIALS_ID = "PAT_Jenkins"
+        DOCKER_CREDENTIALS_ID = "docker-hub"
+        DOCKER_IMAGE_GAME = "lemichael52/wejo_game_service"
+        DOCKER_IMAGE_IDENTITY = "lemichael52/wejo_identity_service"
+        DOCKER_IMAGE_JOB = "lemichael52/wejo_job_service"
+        DOCKER_IMAGE_REALTIME = "lemichael52/wejo_realtime_service"
+        DOCKER_IMAGE_NOTIFICATION = "lemichael52/wejo_notification_service"
+        
+        BRANCH_NAME = "dev"
+    }
+    
+    stages {
+        stage('Checkout') {
+            steps {
+                git branch: "${BRANCH_NAME}", 
+                    credentialsId: "${PAT_CREDENTIALS_ID}",
+                    url: 'https://github.com/ltmichael52/Wejo.git'
+                echo "Checked out branch ${BRANCH_NAME}"
+            }
+        }
+
+        stage('Detect Changes') {
+            steps {
+                script {
+                    def changedFiles = sh(
+                        script: "git diff --name-only HEAD~1 HEAD || echo ''",
+                        returnStdout: true
+                    ).trim().split("\n").findAll { it }
+
+                    env.UPDATE_COMMON = changedFiles.any { it.startsWith("Wejo/Wejo.Common") } ? "true" : "false"
+                    env.UPDATE_GAME = changedFiles.any { it.startsWith("Wejo/Wejo.Game.API/") || it.startsWith("Wejo/Wejo.Game.Application/") || it.startsWith("Wejo/Wejo.Game.Infrastructure/") } ? "true" : "false"
+                    env.UPDATE_IDENTITY = changedFiles.any { it.startsWith("Wejo/Wejo.Identity.API/") || it.startsWith("Wejo/Wejo.Identity.Application/") } ? "true" : "false"
+                    env.UPDATE_JOB = changedFiles.any { it.startsWith("Wejo/Wejo.Backgroud.Job/") } ? "true" : "false"
+                    env.UPDATE_REALTIME = changedFiles.any { it.startsWith("Wejo/Wejo.Realtime.API/") } ? "true" : "false"
+                    env.UPDATE_NOTIFICATION = changedFiles.any { it.startsWith("Wejo/Wejo.Notification.API/") || it.startsWith("Wejo/Wejo.Notification.Application/") } ? "true" : "false"
+                    
+
+                    echo "Update Game Service: ${env.UPDATE_GAME}"
+                    echo "Update Identity Service: ${env.UPDATE_IDENTITY}"
+                    echo "Update Job Service: ${env.UPDATE_JOB}"
+                    echo "Update Realtime Service: ${env.UPDATE_REALTIME}"
+                    echo "Update Notification Service: ${env.UPDATE_NOTIFICATION}"
+
+                    echo "Update Common Modules: ${env.UPDATE_COMMON}"
+                }
+            }
+        }
+        
+
+        stage('Build & Push Updated Service') {
+            steps {
+                script {
+                    withDockerRegistry([credentialsId: "${DOCKER_CREDENTIALS_ID}", url: 'https://index.docker.io/v1/']) {
+                        if (env.UPDATE_COMMON == "true") {
+                            echo "Building and pushing all services..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose build
+                                docker push ${DOCKER_IMAGE_GAME}
+                                docker push ${DOCKER_IMAGE_IDENTITY}
+                                docker push ${DOCKER_IMAGE_JOB}
+                                docker push ${DOCKER_IMAGE_REALTIME}
+                                docker push ${DOCKER_IMAGE_NOTIFICATION}
+
+                                # TODO
+                            """
+                        } else {
+                            if (env.UPDATE_GAME == "true") {
+                                echo "Building and pushing Game Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build game-service
+                                    docker push ${DOCKER_IMAGE_GAME}
+                                """
+                            }
+                            if (env.UPDATE_IDENTITY == "true") {
+                                echo "Building and pushing Identity Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build identity-service
+                                    docker push ${DOCKER_IMAGE_IDENTITY}
+                                """
+                            }
+                            if (env.UPDATE_JOB == "true") {
+                                echo "Building and pushing Job Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build job-service
+                                    docker push ${DOCKER_IMAGE_JOB}
+                                """
+                            }
+                            if (env.UPDATE_REALTIME == "true") {
+                                echo "Building and pushing Realtime Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build realtime-service
+                                    docker push ${DOCKER_IMAGE_REALTIME}
+                                """
+                            }
+                            if (env.UPDATE_NOTIFICATION == "true") {
+                                echo "Building and pushing Notification Service..."
+                                sh """
+                                    cd ${WORKSPACE}/Wejo
+                                    docker-compose build notification-service
+                                    docker push ${DOCKER_IMAGE_NOTIFICATION}
+                                """
+                            }
+                            
+                        }
+                    }
+                }
+            }
+        }
+
+        stage('Deploy Updated Service') {
+            steps {
+                script {
+                    if (env.UPDATE_COMMON == "true") {
+                        echo "Deploying updated system..."
+                        sh """
+                            cd ${WORKSPACE}/Wejo
+                            docker-compose stop game-service identity-service job-service realtime-service notification-service cassandra rabbitmq
+                            docker-compose rm -f game-service identity-service job-service realtime-service notification-service cassandra rabbitmq
+                            docker pull ${DOCKER_IMAGE_GAME}
+                            docker pull ${DOCKER_IMAGE_IDENTITY}
+                            docker pull ${DOCKER_IMAGE_JOB}
+                            docker pull ${DOCKER_IMAGE_REALTIME}
+                            docker pull ${DOCKER_IMAGE_NOTIFICATION}
+                            
+                            docker compose up -d --force-recreate game-service identity-service job-service realtime-service notification-service cassandra rabbitmq
+                        """
+                    } else {
+                        if (env.UPDATE_GAME == "true") {
+                            echo "Deploying updated Game Service..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop game-service
+                                docker-compose rm -f game-service
+                                docker pull ${DOCKER_IMAGE_GAME}
+                                docker compose up -d --force-recreate game-service
+                            """
+                        }
+                        if (env.UPDATE_IDENTITY == "true") {
+                            echo "Deploying updated Identity Service..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop identity-service
+                                docker-compose rm -f identity-service
+                                docker pull ${DOCKER_IMAGE_IDENTITY}
+                                docker compose up -d --force-recreate identity-service
+                            """
+                        }
+                        if (env.UPDATE_JOB == "true") {
+                            echo "Deploying updated Job Service..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop job-service
+                                docker-compose rm -f job-service
+                                docker pull ${DOCKER_IMAGE_JOB}
+                                docker compose up -d --force-recreate job-service
+                            """
+                        }
+                        if (env.UPDATE_REALTIME == "true") {
+                            echo "Deploying updated Realtime Service..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop realtime-service
+                                docker-compose rm -f realtime-service
+                                docker pull ${DOCKER_IMAGE_REALTIME}
+                                docker compose up -d --force-recreate realtime-service
+                            """
+                        }
+                        if (env.UPDATE_NOTIFICATION == "true") {
+                            echo "Deploying updated Notification Service..."
+                            sh """
+                                cd ${WORKSPACE}/Wejo
+                                docker-compose stop notification-service
+                                docker-compose rm -f notification-service
+                                docker pull ${DOCKER_IMAGE_NOTIFICATION}
+                                docker compose up -d --force-recreate notification-service
+                            """
+                        }
+                        
+                    }
+                }
+            }
+        }
+    }
+}
