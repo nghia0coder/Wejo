@@ -14,6 +14,11 @@ Wejo is a **microservices-based sports friend connection platform** designed to 
 
 ---
 
+### ⚠️ Note
+
+######  Please note that sensitive information such as IP addresses, database configurations, and other credentials in this project are currently set for the **testing environment** only. These are included for convenience during development and testing. For production deployment, these values will be replaced with secure and appropriate configurations using environment variables or other secure methods.
+
+
 ## 🏗️ Project Structure
 
 Wejo is organized into modular microservices, each serving a distinct purpose:
